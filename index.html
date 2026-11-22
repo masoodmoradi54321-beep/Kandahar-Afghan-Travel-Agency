@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#081526" />
+  <meta name="description" content="اپلیکیشن رسمی کندهار افغان سیاحتی شرکت — مدیریت تکت، ویزا، رسید دیزاینی و کنترل دسترسی" />
+  <title>کندهار افغان سیاحتی شرکت — اپلیکیشن رسمی</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Vazirmatn', 'Tahoma', 'Arial', 'sans-serif']
+          },
+          colors: {
+            navy: {
+              950: '#050d18',
+              900: '#081526',
+              800: '#102847',
+              700: '#193b66'
+            },
+            gold: {
+              200: '#fbe7a6',
+              300: '#f5d06c',
+              400: '#dfb037',
+              500: '#c9972c',
+              600: '#a67617'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root {
+      --navy-950: #050d18;
+      --navy-900: #081526;
+      --navy-800: #102847;
+      --gold-400: #dfb037;
+      --gold-500: #c9972c;
+      --gold-200: #fbe7a6;
+    }
+
+    body {
+      font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 88% 4%, rgba(223, 176, 55, 0.14), transparent 34%),
+        radial-gradient(circle at 12% 92%, rgba(16, 40, 71, 0.12), transparent 38%),
+        #eef2f7;
+      color: #0f172a;
+      min-height: 100vh;
+    }
+
+    .gold-gradient {
+      background: linear-gradient(135deg, #fbe7a6 0%, #dfb037 48%, #b38016 100%);
+    }
+
+    .navy-gradient {
+      background: linear-gradient(135deg, #050d18 0%, #081526 52%, #143259 100%);
+    }
+
+    .gold-border-card {
+      background: #ffffff;
+      border: 1px solid #dce4ef;
+      border-top: 3px solid #c9972c;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(8, 21, 38, 0.06);
+    }
+
+    .receipt-sheet {
+      position: relative;
+      background: #ffffff;
+      border: 2px solid #c9972c;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(8, 21, 38, 0.1);
+    }
+
+    .receipt-watermark-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.075;
+      pointer-events: none;
+      user-select: none;
+      transform: rotate(-10deg) scale(1.25);
+    }
+
+    @media print {
+      body * { visibility: hidden !important; }
+      #printableReceiptArea, #printableReceiptArea * { visibility: visible !important; }
+      #printableReceiptArea {
+        position: fixed !important;
+        inset: 0 !important;
+        margin: 0 !important;
+        padding: 16px !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+        border: 2px solid #b38016 !important;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-gold-400 selection:text-navy-950">
+
+  <!-- Inline SVG Emblem Template (Kandahar Afghan Travel Agency Style) -->
+  <template id="kandaharEmblemTemplate">
+    <svg viewBox="0 0 240 240" class="w-full h-full" xmlns="http://www.w3.org/2000/svg" aria-label="نشان کندهار افغان سیاحتی شرکت">
+      <defs>
+        <radialGradient id="globeGrad" cx="40%" cy="32%" r="65%">
+          <stop offset="0%" stop-color="#2563eb" />
+          <stop offset="55%" stop-color="#0f2c59" />
+          <stop offset="100%" stop-color="#051124" />
+        </radialGradient>
+        <linearGradient id="goldMetal" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#fff0b3" />
+          <stop offset="35%" stop-color="#dfb037" />
+          <stop offset="70%" stop-color="#9e6c0b" />
+          <stop offset="100%" stop-color="#f7d574" />
+        </linearGradient>
+        <linearGradient id="darkBanner" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#07172b" />
+          <stop offset="100%" stop-color="#13345e" />
+        </linearGradient>
+        <clipPath id="innerCircleClip">
+          <circle cx="120" cy="120" r="102" />
+        </clipPath>
+      </defs>
+
+      <!-- Outer Gold Ring -->
+      <circle cx="120" cy="120" r="115" fill="url(#navy-grad, #07162a)" stroke="url(#goldMetal)" stroke-width="7" />
+      <circle cx="120" cy="120" r="105" fill="#07162a" stroke="url(#goldMetal)" stroke-width="2" />
+
+      <!-- Clipped Interior -->
+      <g clip-path="url(#innerCircleClip)">
+        <!-- Globe -->
+        <circle cx="96" cy="94" r="64" fill="url(#globeGrad)" stroke="url(#goldMetal)" stroke-width="2.5" />
+        <ellipse cx="96" cy="94" rx="34" ry="64" fill="none" stroke="#93c5fd" stroke-opacity="0.35" stroke-width="1.2" />
+        <ellipse cx="96" cy="94" rx="64" ry="26" fill="none" stroke="#93c5fd" stroke-opacity="0.35" stroke-width="1.2" />
+        <line x1="32" y1="94" x2="160" y2="94" stroke="#93c5fd" stroke-opacity="0.35" stroke-width="1.2" />
+
+        <!-- Stylized Continents -->
+        <path d="M58 66 Q75 56 92 64 Q102 72 88 85 Q75 95 65 84 Z" fill="url(#goldMetal)" opacity="0.88" />
+        <path d="M104 72 Q126 65 138 78 Q132 95 114 96 Q100 88 104 72 Z" fill="url(#goldMetal)" opacity="0.82" />
+        <path d="M74 102 Q88 98 95 115 Q86 132 74 125 Q68 112 74 102 Z" fill="url(#goldMetal)" opacity="0.85" />
+
+        <!-- Golden Ribbon / Flight Path -->
+        <path d="M22 142 Q95 112 198 44" fill="none" stroke="url(#goldMetal)" stroke-width="8" stroke-linecap="round" />
+        <path d="M26 149 Q100 120 202 52" fill="none" stroke="#fff3c4" stroke-width="2.2" stroke-linecap="round" opacity="0.85" />
+
+        <!-- Golden Airplane -->
+        <g transform="translate(182, 46) rotate(-32)">
+          <path d="M-18 0 L12 -3 L20 0 L12 3 L-18 0 Z" fill="url(#goldMetal)" />
+          <path d="M-4 -1 L-14 -14 L-6 -14 L4 -1 Z" fill="url(#goldMetal)" />
+          <path d="M-4 1 L-14 14 L-6 14 L4 1 Z" fill="url(#goldMetal)" />
+          <path d="M-16 0 L-22 -8 L-17 -8 L-12 0 Z" fill="url(#goldMetal)" />
+        </g>
+
+        <!-- Bold Gold Letter K -->
+        <path d="M54 58 L74 58 L74 105 L114 58 L138 58 L95 106 L140 156 L114 156 L74 111 L74 156 L54 156 Z" fill="url(#goldMetal)" stroke="#422a02" stroke-width="1.5" />
+
+        <!-- Bottom Skyline Silhouette -->
+        <g fill="url(#goldMetal)" opacity="0.9">
+          <rect x="25" y="156" width="190" height="64" fill="#07162a" />
+          <path d="M35 190 L43 162 L51 190 Z" />
+          <rect x="40" y="178" width="6" height="12" />
+          <rect x="58" y="168" width="12" height="22" />
+          <rect x="61" y="162" width="6" height="6" />
+          <path d="M78 190 Q88 172 98 190 Z" />
+          <rect x="81" y="180" width="14" height="10" />
+        </g>
+
+        <!-- Agency Title Badge -->
+        <rect x="112" y="114" width="114" height="24" rx="11" fill="url(#darkBanner)" stroke="url(#goldMetal)" stroke-width="2" />
+        <text x="169" y="130" text-anchor="middle" fill="#fff3c4" font-size="11.5" font-weight="800" font-family="Vazirmatn, Tahoma, sans-serif">Kandahar Afghan</text>
+
+        <rect x="114" y="142" width="110" height="24" rx="11" fill="url(#goldMetal)" stroke="#5c3d04" stroke-width="1.5" />
+        <text x="169" y="158" text-anchor="middle" fill="#07162a" font-size="11.5" font-weight="800" font-family="Vazirmatn, Tahoma, sans-serif">کندهار افغان سیاحتی</text>
+
+        <text x="120" y="206" text-anchor="middle" fill="#fbe7a6" font-size="11" font-weight="700" font-family="Vazirmatn, Tahoma, sans-serif">کندهار افغان سیاحتی شرکت</text>
+      </g>
+    </svg>
+  </template>
+
+  <!-- Toast Notification -->
+  <div id="toastBanner" class="fixed bottom-5 left-5 z-50 hidden max-w-sm rounded-xl border border-gold-400/50 bg-navy-900 px-4 py-3 text-xs font-semibold text-white shadow-2xl transition-all"></div>
+
+  <!-- Top Navigation & Live Active Users Bar -->
+  <header class="navy-gradient sticky top-0 z-30 border-b-2 border-gold-500 text-white shadow-xl">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-3">
+        <div class="h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-gold-300 bg-navy-950 shadow-lg" data-logo-slot="header"></div>
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <h1 id="companyTitleDisplay" class="text-base sm:text-lg font-extrabold tracking-tight text-white">کندهار افغان سیاحتی شرکت</h1>
+            <span class="rounded-full bg-gold-500/20 border border-gold-400/40 px-2.5 py-0.5 text-[11px] font-bold text-gold-200">نسخه رسمی PWA v4.0</span>
+          </div>
+          <p class="text-[11.5px] text-slate-300">Kandahar Afghan Travel Agency — سیستم مدیریت پرواز، ویزا، رسید و کنترل دسترسی</p>
+        </div>
+      </div>
+
+      <!-- Right Controls: Store Modal, Install, Logo Upload, Current User Switcher -->
+      <div class="flex flex-wrap items-center gap-2 no-print">
+        <button id="openStoreModalBtn" type="button" class="gold-gradient rounded-xl px-3.5 py-2 text-xs font-extrabold text-navy-950 shadow hover:brightness-105 transition cursor-pointer">
+          📲 صفحه فروشگاه و نصب اپ
+        </button>
+        <button id="directInstallBtn" type="button" class="hidden rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-extrabold text-white shadow hover:bg-emerald-600 transition cursor-pointer">
+          ⬇️ نصب فوری
+        </button>
+        <label class="cursor-pointer rounded-xl border border-white/25 bg-white/10 px-3 py-2 text-xs font-bold text-white hover:bg-white/20 transition">
+          🖼 تغییر لوگو
+          <input id="logoFileInput" type="file" accept="image/*" class="hidden" />
+        </label>
+        <div class="flex items-center gap-1.5 rounded-xl border border-gold-400/35 bg-navy-950/80 px-2.5 py-1.5">
+          <span class="text-[11px] text-gold-200 font-semibold">حساب فعال:</span>
+          <select id="activeUserSelect" class="rounded-lg border border-white/20 bg-navy-800 px-2 py-1 text-xs font-bold text-white focus:outline-none focus:border-gold-400"></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Active Users Strip (Visible to Everyone) -->
+    <div class="border-t border-white/10 bg-navy-950/75 px-4 py-2 no-print">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 font-bold text-gold-300">
+            <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            کاربران فعال آنلاین (قابل مشاهده برای همه):
+          </span>
+          <div id="liveActiveUsersList" class="flex flex-wrap items-center gap-1.5"></div>
+        </div>
+        <div id="currentDeviceBadge" class="text-[11px] text-slate-300"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="mx-auto max-w-7xl px-4 py-6">
+
+    <!-- Strict Lock Gate Banner (Shown when current account or device is blocked by President/Vice President) -->
+    <section id="accessLockGate" class="hidden mb-6 rounded-2xl border-2 border-rose-500 bg-white p-6 shadow-2xl">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-rose-100 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-2xl text-rose-700">🔒</div>
+          <div>
+            <h2 class="text-lg font-extrabold text-rose-800">دسترسی مسدود است — در انتظار تایید رئیس یا معاون</h2>
+            <p id="lockReasonText" class="text-xs sm:text-sm text-slate-600 mt-0.5">حساب یا دستگاه شما در حال حاضر توسط مدیریت شرکت غیرفعال شده است و امکان ورود خودسرانه وجود ندارد.</p>
+          </div>
+        </div>
+        <span class="rounded-full bg-rose-100 px-3.5 py-1.5 text-xs font-extrabold text-rose-800">وضعیت: مسدود / غیرفعال</span>
+      </div>
+
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+        <div class="rounded-xl bg-slate-50 p-3.5 border border-slate-200">
+          <div class="font-bold text-navy-900 mb-1">قانون امنیتی شرکت</div>
+          <p class="text-slate-600 leading-relaxed">هیچ کارمندی بدون اجازه و فعال‌سازی مستقیم <strong>رئیس</strong> یا <strong>معاون</strong> نمی‌تواند وارد بخش‌های کاری یا تغییر وضعیت شود.</p>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-3.5 border border-slate-200">
+          <div class="font-bold text-navy-900 mb-1">کاربران فعال فعلی</div>
+          <div id="lockScreenActiveUsers" class="text-slate-700 space-y-1"></div>
+        </div>
+        <div class="rounded-xl bg-amber-50 p-3.5 border border-amber-200">
+          <div class="font-bold text-amber-900 mb-1">آزمایش سریع حالت مدیریت</div>
+          <p class="text-amber-800 mb-2">برای باز کردن قفل یا مدیریت کارمندان، به حساب <strong>رئیس</strong> یا <strong>معاون</strong> سوئیچ کنید:</p>
+          <div class="flex gap-2">
+            <button type="button" onclick="quickSwitchToRole('رئیس')" class="rounded-lg bg-navy-900 px-3 py-1.5 font-bold text-gold-200 hover:bg-navy-800 cursor-pointer">ورود رئیس</button>
+            <button type="button" onclick="quickSwitchToRole('معاون')" class="rounded-lg bg-gold-500 px-3 py-1.5 font-bold text-navy-950 hover:bg-gold-400 cursor-pointer">ورود معاون</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Authorized Workspace Container -->
+    <div id="workspaceContainer">
+      <!-- Top Summary KPIs -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="gold-border-card p-4">
+          <div class="text-xs font-semibold text-slate-500">مجموع پرونده‌ها و خدمات</div>
+          <div id="kpiTotalRecords" class="mt-1 text-2xl font-extrabold text-navy-900">0</div>
+          <div class="mt-1 text-[11.5px] text-slate-500">تکت طیاره، ویزا، پکیج و حواله</div>
+        </div>
+        <div class="gold-border-card p-4" style="border-top-color:#059669;">
+          <div class="text-xs font-semibold text-slate-500">کاربران فعال مجاز</div>
+          <div id="kpiActiveStaff" class="mt-1 text-2xl font-extrabold text-emerald-700">0</div>
+          <div class="mt-1 text-[11.5px] text-slate-500">تاییدشده توسط رئیس و معاون</div>
+        </div>
+        <div class="gold-border-card p-4" style="border-top-color:#e11d48;">
+          <div class="text-xs font-semibold text-slate-500">حساب‌های مسدود / قفل‌شده</div>
+          <div id="kpiLockedStaff" class="mt-1 text-2xl font-extrabold text-rose-700">0</div>
+          <div class="mt-1 text-[11.5px] text-slate-500">فاقد مجوز ورود خودسرانه</div>
+        </div>
+        <div class="gold-border-card p-4" style="border-top-color:#0284c7;">
+          <div class="text-xs font-semibold text-slate-500">نقش و دستگاه شما</div>
+          <div id="kpiMyRoleDevice" class="mt-1 text-sm font-extrabold text-sky-900">—</div>
+          <div id="kpiMyPermissionsCount" class="mt-1 text-[11.5px] text-slate-500">بخش‌های مجاز: —</div>
+        </div>
+      </section>
+
+      <!-- Section Navigation Tabs -->
+      <nav class="mb-6 flex flex-wrap gap-2 no-print" id="sectionTabs">
+        <button data-sec="operations" type="button" class="tab-btn rounded-xl px-4 py-2.5 text-xs sm:text-sm font-extrabold transition cursor-pointer">
+          ✈️ ثبت خدمات و رسید دیزاینی
+        </button>
+        <button data-sec="access" type="button" class="tab-btn rounded-xl px-4 py-2.5 text-xs sm:text-sm font-extrabold transition cursor-pointer">
+          🛡️ کنترل دسترسی کارمندان و دستگاه‌ها (رئیس و معاون)
+        </button>
+        <button data-sec="audit" type="button" class="tab-btn rounded-xl px-4 py-2.5 text-xs sm:text-sm font-extrabold transition cursor-pointer">
+          🕵️ گزارش ورود و فعالیت‌ها
+        </button>
+      </nav>
+
+      <!-- SECTION 1: OPERATIONS & DESIGNER RECEIPT -->
+      <section id="sec-operations" class="space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <!-- Left 7 Cols: Entry Form + Records Table -->
+          <div class="lg:col-span-7 space-y-6">
+            <div class="gold-border-card p-5">
+              <div class="flex items-center justify-between gap-2 mb-4">
+                <h2 class="text-base font-extrabold text-navy-900">ثبت تکت، ویزا، پکیج یا حواله جدید</h2>
+                <span id="formPermissionHint" class="text-[11px] font-bold text-slate-500"></span>
+              </div>
+
+              <form id="serviceForm" class="space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label class="block text-xs font-bold text-navy-900 mb-1">شماره رسید / کد</label>
+                    <input id="fCode" type="text" placeholder="مثلاً: KA-2045" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-gold-500 focus:outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-bold text-navy-900 mb-1">نام مسافر / مشتری یا عنوان پرونده *</label>
+                    <input id="fPassenger" type="text" required placeholder="مثلاً: احمد جان — ویزای امارات و تکت" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-gold-500 focus:outline-none" />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label class="block text-xs font-bold text-navy-900 mb-1">بخش خدماتی *</label>
+                    <select id="fSection" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold focus:border-gold-500 focus:outline-none">
+                      <option value="تکت طیاره">تکت طیاره</option>
+                      <option value="ویزا و پاسپورت">ویزا و پاسپورت</option>
+                      <option value="پکیج سیاحتی">پکیج سیاحتی</option>
+                      <option value="حواله و مالی">حواله و مالی</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-navy-900 mb-1">مبلغ و واحد پول</label>
+                    <input id="fAmount" type="text" placeholder="مثلاً: 520 USD یا 36,000 AFN" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-gold-500 focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-navy-900 mb-1">تاریخ</label>
+                    <input id="fDate" type="date" value="2026-11-22" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-gold-500 focus:outline-none" />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs font-bold text-navy-900 mb-1">مسیر / کشور مقصد</label>
+                    <input id="fRoute" type="text" placeholder="مثلاً: کندهار - دبی (KDH - DXB)" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-gold-500 focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-navy-900 mb-1">شماره تماس / واتساپ</label>
+                    <input id="fPhone" type="text" dir="ltr" placeholder="+93 70 000 0000" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-right focus:border-gold-500 focus:outline-none" />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-navy-900 mb-1">توضیحات تکمیلی رسید</label>
+                  <textarea id="fNotes" rows="2" placeholder="جزئیات پرواز، ریفرنس نمبر ویزا، مقدار پرداختی یا یادداشت..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-gold-500 focus:outline-none"></textarea>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 pt-1">
+                  <button type="submit" class="navy-gradient rounded-xl px-4 py-2.5 text-xs sm:text-sm font-bold text-gold-200 shadow hover:brightness-110 transition cursor-pointer">
+                    💾 ذخیره و نمایش در رسید
+                  </button>
+                  <button id="syncPreviewBtn" type="button" class="gold-gradient rounded-xl px-4 py-2.5 text-xs sm:text-sm font-extrabold text-navy-950 shadow hover:brightness-105 transition cursor-pointer">
+                    👁 پیش‌نمایش آنی رسید
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Saved Records List -->
+            <div class="gold-border-card p-5">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <h2 class="text-base font-extrabold text-navy-900">فهرست پرونده‌ها و رسیدها</h2>
+                <input id="recordSearchInput" type="search" placeholder="جستجو نام، کد یا مسیر..." class="w-full sm:w-56 rounded-xl border border-slate-300 px-3 py-1.5 text-xs focus:border-gold-500 focus:outline-none" />
+              </div>
+              <div id="recordsList" class="space-y-2.5"></div>
+            </div>
+          </div>
+
+          <!-- Right 5 Cols: Designer Receipt -->
+          <div class="lg:col-span-5">
+            <div class="gold-border-card p-5">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-4 no-print">
+                <h2 class="text-base font-extrabold text-navy-900">رسید دیزاینی رسمی شرکت</h2>
+                <div class="flex items-center gap-2">
+                  <button id="printReceiptBtn" type="button" class="gold-gradient rounded-xl px-3.5 py-2 text-xs font-extrabold text-navy-950 shadow hover:brightness-105 cursor-pointer">
+                    🖨 چاپ / ذخیره PDF
+                  </button>
+                </div>
+              </div>
+
+              <div id="printableReceiptArea" class="receipt-sheet p-5">
+                <div class="receipt-watermark-layer" data-logo-slot="watermark"></div>
+                <div class="relative z-10">
+                  <!-- Receipt Top Header -->
+                  <div class="flex items-center justify-between gap-3 border-b-2 border-dashed border-gold-400/80 pb-3.5 mb-4">
+                    <div class="flex items-center gap-3">
+                      <div class="h-14 w-14 shrink-0 overflow-hidden rounded-xl border-2 border-gold-500 bg-navy-950" data-logo-slot="receipt"></div>
+                      <div>
+                        <div class="text-sm font-extrabold text-navy-900">کندهار افغان سیاحتی شرکت</div>
+                        <div class="text-[11px] font-bold text-gold-600">Kandahar Afghan Travel Agency</div>
+                      </div>
+                    </div>
+                    <div class="rounded-xl bg-navy-900 px-3 py-1.5 text-center text-white">
+                      <div class="text-[10px] text-gold-300 font-bold">رسید رسمی</div>
+                      <div id="recCodeView" class="text-xs font-extrabold tracking-wide">#KA-1001</div>
+                    </div>
+                  </div>
+
+                  <!-- Receipt Fields -->
+                  <div class="grid grid-cols-2 gap-2.5 text-xs mb-3">
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/90 p-2.5">
+                      <span class="block text-[11px] text-slate-500">نام مسافر / عنوان</span>
+                      <strong id="recPassengerView" class="text-navy-900 text-xs sm:text-sm">—</strong>
+                    </div>
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/90 p-2.5">
+                      <span class="block text-[11px] text-slate-500">نوع خدمات</span>
+                      <strong id="recSectionView" class="text-navy-900 text-xs sm:text-sm">—</strong>
+                    </div>
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/90 p-2.5">
+                      <span class="block text-[11px] text-slate-500">مبلغ</span>
+                      <strong id="recAmountView" class="text-emerald-800 text-xs sm:text-sm">—</strong>
+                    </div>
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/90 p-2.5">
+                      <span class="block text-[11px] text-slate-500">تاریخ و مسیر</span>
+                      <strong id="recRouteDateView" class="text-navy-900 text-xs sm:text-sm">—</strong>
+                    </div>
+                  </div>
+
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/90 p-2.5 text-xs mb-3">
+                    <span class="block text-[11px] text-slate-500">تلفن و توضیحات</span>
+                    <strong id="recNotesView" class="font-semibold text-slate-800 leading-relaxed">—</strong>
+                  </div>
+
+                  <div class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 pt-2.5 text-[11px] text-slate-500">
+                    <span>صادرکننده: <strong id="recIssuerView" class="text-navy-800">—</strong></span>
+                    <span id="recIssuedDateView">تاریخ صدور: —</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: PRESIDENT & VICE PRESIDENT RBAC CONTROL -->
+      <section id="sec-access" class="hidden space-y-6">
+        <div id="leadershipNoticeBox" class="rounded-2xl border border-gold-400/60 bg-amber-50 p-4 text-xs sm:text-sm text-amber-950"></div>
+
+        <div id="rbacManagerPanel" class="gold-border-card p-5 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
+            <div>
+              <h2 class="text-base font-extrabold text-navy-900">مدیریت دسترسی کارمندان، دستگاه‌های مجاز و قفل فوری</h2>
+              <p class="text-xs text-slate-500 mt-0.5">تنها <strong>رئیس</strong> و <strong>معاون</strong> می‌توانند وضعیت فعال/مسدود، دستگاه مجاز و بخش‌های کاری کارمندان را تغییر دهند.</p>
+            </div>
+            <button id="addEmployeeBtn" type="button" class="gold-gradient rounded-xl px-3.5 py-2 text-xs font-extrabold text-navy-950 shadow hover:brightness-105 cursor-pointer">
+              + افزودن حساب کارمند جدید
+            </button>
+          </div>
+
+          <div id="staffPermissionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: AUDIT LOG (PRESIDENT & VICE PRESIDENT) -->
+      <section id="sec-audit" class="hidden space-y-6">
+        <div class="gold-border-card p-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div>
+              <h2 class="text-base font-extrabold text-navy-900">گزارش ورود و خروج و فعالیت‌های سیستم</h2>
+              <p class="text-xs text-slate-500">ثبت دقیق زمان ورود، دستگاه استفاده شده، تغییر وضعیت دسترسی و عملیات ثبت‌شده</p>
+            </div>
+            <button id="clearAuditBtn" type="button" class="hidden rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-100 cursor-pointer">
+              پاک کردن گزارش‌ها
+            </button>
+          </div>
+          <div id="auditLogList" class="space-y-2"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Play-Store-Style App Listing & Installation Modal -->
+  <div id="storeModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/75 p-4 backdrop-blur-xs">
+    <div class="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-2xl border-2 border-gold-400 bg-white shadow-2xl">
+      <div class="navy-gradient flex items-center justify-between gap-3 border-b border-gold-500/40 px-5 py-4 text-white">
+        <div class="flex items-center gap-2">
+          <span class="rounded-lg bg-gold-500/20 px-2.5 py-1 text-xs font-extrabold text-gold-200">فروشگاه رسمی اپلیکیشن</span>
+          <span class="text-xs text-slate-300">کندهار افغان سیاحتی شرکت</span>
+        </div>
+        <button id="closeStoreModalBtn" type="button" class="rounded-lg bg-white/10 px-2.5 py-1 text-xs font-bold text-white hover:bg-white/20 cursor-pointer">✕ بستن</button>
+      </div>
+
+      <div class="p-5 space-y-5">
+        <!-- Store Header Card -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+          <div class="flex items-center gap-4">
+            <div class="h-20 w-20 shrink-0 overflow-hidden rounded-2xl border-2 border-gold-500 bg-navy-950 shadow-lg" data-logo-slot="store"></div>
+            <div>
+              <h3 class="text-lg font-extrabold text-navy-900">کندهار افغان سیاحتی شرکت</h3>
+              <div class="text-xs font-bold text-emerald-700 mt-0.5">Kandahar Afghan Travel • رسمی و امن</div>
+              <div class="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-600">
+                <span>★ <strong>4.9</strong> امتیاز شرکت</span>
+                <span>•</span>
+                <span>نسخه <strong>4.0 (PWA)</strong></span>
+                <span>•</span>
+                <span>موبایل و دسکتاپ</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 w-full sm:w-auto">
+            <button id="modalInstallBtn" type="button" class="gold-gradient rounded-xl px-5 py-2.5 text-xs font-extrabold text-navy-950 shadow hover:brightness-105 cursor-pointer">
+              نصب اپلیکیشن روی این دستگاه
+            </button>
+            <button id="downloadIcoBtn" type="button" class="rounded-xl border border-slate-300 bg-slate-100 px-4 py-2 text-xs font-bold text-navy-900 hover:bg-slate-200 cursor-pointer">
+              دانلود آیکون رسمی (PNG)
+            </button>
+          </div>
+        </div>
+
+        <!-- App Description & Screenshots Preview -->
+        <div>
+          <h4 class="text-sm font-extrabold text-navy-900 mb-1.5">درباره این اپلیکیشن</h4>
+          <p class="text-xs leading-relaxed text-slate-600">
+            اپلیکیشن اختصاصی <strong>کندهار افغان سیاحتی شرکت</strong> برای مدیریت پرونده‌های تکت طیاره، ویزا و پاسپورت، پکیج سیاحتی و حواله مالی طراحی شده است. دسترسی هر کارمند و دستگاه تنها با تایید <strong>رئیس</strong> یا <strong>معاون</strong> برقرار می‌ماند و فهرست کاربران فعال به صورت زنده برای همه قابل مشاهده است.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div class="font-extrabold text-navy-900 mb-1">۱. کنترل قفل و دستگاه</div>
+            <p class="text-slate-600">قفل آنی حساب یا دستگاه غیرمجاز توسط رئیس و معاون بدون امکان ورود خودسرانه.</p>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div class="font-extrabold text-navy-900 mb-1">۲. دید زنده کاربران فعال</div>
+            <p class="text-slate-600">همه کاربران آنلاین را می‌بینند؛ گزارش کامل ورود و فعالیت‌ها ویژه رئیس و معاون است.</p>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div class="font-extrabold text-navy-900 mb-1">۳. رسید چاپی با لوگو</div>
+            <p class="text-slate-600">صدور رسید رسمی با واترمارک و لوگوی شرکت و قابلیت چاپ یا ذخیره PDF.</p>
+          </div>
+        </div>
+
+        <!-- Install Instructions for Mobile & Desktop -->
+        <div class="rounded-xl border border-amber-200 bg-amber-50/80 p-3.5 text-xs text-amber-950 space-y-1.5">
+          <div class="font-extrabold">راهنمای نصب به عنوان آیکون روی موبایل و دسکتاپ:</div>
+          <div>• <strong>اندروید و دسکتاپ (Chrome / Edge):</strong> دکمه «نصب اپلیکیشن» را بزنید یا از منوی مرورگر گزینه <em>Install App / Add to Home Screen</em> را انتخاب کنید.</div>
+          <div>• <strong>آیفون (Safari):</strong> دکمه <em>Share</em> را بزنید و گزینه <em>Add to Home Screen</em> را انتخاب نمایید.</div>
+          <div>• <strong>ذخیره در جیمیل:</strong> آدرس برنامه یا فایل آن را در جیمیل خود نگه دارید تا در صورت پاک شدن دستگاه دوباره نصب و فعال کنید.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "kandahar_afghan_travel_rbac_v4";
+    const SECTIONS = ["تکت طیاره", "ویزا و پاسپورت", "پکیج سیاحتی", "حواله و مالی"];
+
+    const DEFAULT_STATE = {
+      companyName: "کندهار افغان سیاحتی شرکت",
+      customLogoDataUrl: "",
+      activeUserId: "u-president",
+      currentTab: "operations",
+      deferredPromptHandled: false,
+      users: [
+        {
+          id: "u-president",
+          name: "حاجی محمد اسماعیل رفیقی",
+          role: "رئیس",
+          active: true,
+          online: true,
+          deviceType: "دسکتاپ",
+          allowedDeviceId: "ANY-EXECUTIVE",
+          permissions: [...SECTIONS]
+        },
+        {
+          id: "u-vice",
+          name: "مسعود مرادی",
+          role: "معاون",
+          active: true,
+          online: true,
+          deviceType: "موبایل / دسکتاپ",
+          allowedDeviceId: "ANY-EXECUTIVE",
+          permissions: [...SECTIONS]
+        },
+        {
+          id: "u-staff-1",
+          name: "طارق احمدی",
+          role: "کارمند",
+          active: true,
+          online: true,
+          deviceType: "دسکتاپ",
+          allowedDeviceId: "DESKTOP-OFFICE-01",
+          permissions: ["تکت طیاره", "ویزا و پاسپورت"]
+        },
+        {
+          id: "u-staff-2",
+          name: "منصور مرادی",
+          role: "کارمند",
+          active: false,
+          online: false,
+          deviceType: "موبایل",
+          allowedDeviceId: "MOBILE-STAFF-02",
+          permissions: ["پکیج سیاحتی"]
+        }
+      ],
+      records: [
+        {
+          id: "rec-1001",
+          code: "KA-1001",
+          passenger: "احمد ولی کرزی",
+          section: "تکت طیاره",
+          amount: "480 USD",
+          date: "2026-11-22",
+          route: "کندهار - دبی (KDH - DXB)",
+          phone: "+93 70 123 4567",
+          notes: "پرواز رفت و برگشت — تاییدشده",
+          issuer: "طارق احمدی (کارمند)",
+          issuedAt: "2026-11-22"
+        },
+        {
+          id: "rec-1002",
+          code: "KA-1002",
+          passenger: "فاطمه سادات",
+          section: "ویزا و پاسپورت",
+          amount: "14,500 AFN",
+          date: "2026-11-22",
+          route: "ویزای سیاحتی / زیارتی",
+          phone: "+93 79 888 1122",
+          notes: "پاسپورت تحویل گرفته شد — در حال پیگیری",
+          issuer: "مسعود مرادی (معاون)",
+          issuedAt: "2026-11-22"
+        }
+      ],
+      auditLogs: [
+        {
+          id: "log-1",
+          time: "2026-11-22 19:45",
+          actor: "حاجی محمد اسماعیل رفیقی (رئیس)",
+          device: "DESKTOP-EXEC-01",
+          detail: "وارد سیستم شد و دسترسی طارق احمدی را به تکت طیاره و ویزا محدود کرد."
+        },
+        {
+          id: "log-2",
+          time: "2026-11-22 19:50",
+          actor: "مسعود مرادی (معاون)",
+          device: "MOBILE-EXEC-02",
+          detail: "حساب منصور مرادی را در وضعیت مسدود / در انتظار تایید قرار داد."
+        }
+      ]
+    };
+
+    let appState = loadState();
+    let deferredInstallPrompt = null;
+    let activeReceiptData = appState.records[0] || {};
+
+    function getCurrentDeviceId() {
+      let did = sessionStorage.getItem("kandahar_session_device_id");
+      if (!did) {
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        did = (isMobile ? "MOBILE-STAFF-02" : "DESKTOP-OFFICE-01");
+        sessionStorage.setItem("kandahar_session_device_id", did);
+      }
+      return did;
+    }
+
+    const SESSION_DEVICE_ID = getCurrentDeviceId();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return {
+            ...DEFAULT_STATE,
+            ...parsed,
+            users: Array.isArray(parsed.users) && parsed.users.length ? parsed.users : DEFAULT_STATE.users,
+            records: Array.isArray(parsed.records) ? parsed.records : DEFAULT_STATE.records,
+            auditLogs: Array.isArray(parsed.auditLogs) ? parsed.auditLogs : DEFAULT_STATE.auditLogs
+          };
+        }
+      } catch (e) {
+        // Fallback to default state if storage is unreadable
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    }
+
+    function persistState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        showToast("هشدار: فضای ذخیره‌سازی مرورگر پر است.");
+      }
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById("toastBanner");
+      el.textContent = msg;
+      el.classList.remove("hidden");
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        el.classList.add("hidden");
+      }, 3400);
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function getCurrentUser() {
+      return appState.users.find(u => u.id === appState.activeUserId) || appState.users[0];
+    }
+
+    function isLeadership(user) {
+      return user && (user.role === "رئیس" || user.role === "معاون");
+    }
+
+    function canCurrentUserEnter(user) {
+      if (!user) return false;
+      if (isLeadership(user)) return Boolean(user.active);
+      const deviceAllowed = !user.allowedDeviceId || user.allowedDeviceId === "ANY" || user.allowedDeviceId === SESSION_DEVICE_ID;
+      return Boolean(user.active) && deviceAllowed;
+    }
+
+    function addAuditLog(detailText, actorOverride = null) {
+      const actorUser = actorOverride || getCurrentUser();
+      const now = new Date();
+      const stamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      appState.auditLogs.unshift({
+        id: "log-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+        time: stamp,
+        actor: actorUser ? `${actorUser.name} (${actorUser.role})` : "سیستم",
+        device: SESSION_DEVICE_ID,
+        detail: detailText
+      });
+      if (appState.auditLogs.length > 150) {
+        appState.auditLogs.length = 150;
+      }
+    }
+
+    function renderLogosEverywhere() {
+      const tpl = document.getElementById("kandaharEmblemTemplate");
+      const slots = document.querySelectorAll("[data-logo-slot]");
+      slots.forEach(slot => {
+        slot.innerHTML = "";
+        if (appState.customLogoDataUrl) {
+          const img = document.createElement("img");
+          img.src = appState.customLogoDataUrl;
+          img.alt = appState.companyName;
+          img.className = "h-full w-full object-cover";
+          slot.appendChild(img);
+        } else if (tpl) {
+          slot.appendChild(tpl.content.cloneNode(true));
+        }
+      });
+    }
+
+    function renderLiveActiveUsers() {
+      const container = document.getElementById("liveActiveUsersList");
+      const lockScreenList = document.getElementById("lockScreenActiveUsers");
+      const onlineUsers = appState.users.filter(u => u.active && u.online);
+
+      if (!onlineUsers.length) {
+        container.innerHTML = `<span class="text-slate-400">در حال حاضر هیچ کاربری آنلاین نیست</span>`;
+      } else {
+        container.innerHTML = onlineUsers.map(u => {
+          const badgeStyle = isLeadership(u)
+            ? "border-gold-400/60 bg-gold-500/20 text-gold-200"
+            : "border-emerald-400/40 bg-emerald-500/15 text-emerald-200";
+          return `<span class="inline-flex items-center gap-1 rounded-full border ${badgeStyle} px-2.5 py-0.5 text-[11px] font-bold">
+            <span>${escapeHtml(u.name)}</span>
+            <span class="opacity-80">(${escapeHtml(u.role)})</span>
+          </span>`;
+        }).join("");
+      }
+
+      lockScreenList.innerHTML = onlineUsers.length
+        ? onlineUsers.map(u => `<div>• <strong>${escapeHtml(u.name)}</strong> — ${escapeHtml(u.role)}</div>`).join("")
+        : `<div class="text-slate-500">هیچ کاربر فعالی ثبت نشده است.</div>`;
+
+      document.getElementById("currentDeviceBadge").textContent = `شناسه دستگاه این نشست: ${SESSION_DEVICE_ID}`;
+    }
+
+    function renderUserSwitcher() {
+      const select = document.getElementById("activeUserSelect");
+      select.innerHTML = appState.users.map(u => {
+        const statusTag = u.active ? "فعال" : "مسدود";
+        return `<option value="${escapeHtml(u.id)}" ${u.id === appState.activeUserId ? "selected" : ""}>${escapeHtml(u.name)} — ${escapeHtml(u.role)} (${statusTag})</option>`;
+      }).join("");
+    }
+
+    function renderAccessGateAndTabs() {
+      const user = getCurrentUser();
+      const allowed = canCurrentUserEnter(user);
+      const gate = document.getElementById("accessLockGate");
+      const workspace = document.getElementById("workspaceContainer");
+
+      if (!allowed) {
+        gate.classList.remove("hidden");
+        workspace.classList.add("hidden");
+        const reasonEl = document.getElementById("lockReasonText");
+        if (!user.active) {
+          reasonEl.textContent = `حساب «${user.name} (${user.role})» توسط رئیس یا معاون غیرفعال شده است. تا زمان آزادسازی توسط مدیریت، ورود خودسرانه مجاز نیست.`;
+        } else {
+          reasonEl.textContent = `دستگاه فعلی (${SESSION_DEVICE_ID}) با دستگاه مجاز حساب «${user.name}» (${user.allowedDeviceId}) مطابقت ندارد. لطفاً با رئیس یا معاون هماهنگ کنید.`;
+        }
+        return;
+      }
+
+      gate.classList.add("hidden");
+      workspace.classList.remove("hidden");
+
+      // KPIs
+      document.getElementById("kpiTotalRecords").textContent = appState.records.length;
+      document.getElementById("kpiActiveStaff").textContent = appState.users.filter(u => u.active).length;
+      document.getElementById("kpiLockedStaff").textContent = appState.users.filter(u => !u.active).length;
+      document.getElementById("kpiMyRoleDevice").textContent = `${user.role} • ${SESSION_DEVICE_ID}`;
+      document.getElementById("kpiMyPermissionsCount").textContent = isLeadership(user)
+        ? "دسترسی کامل مدیریت و همه بخش‌ها"
+        : `بخش‌های مجاز: ${user.permissions.length ? user.permissions.join("، ") : "هیچ بخشی"}`;
+
+      // Section Form Permissions
+      const sectionSelect = document.getElementById("fSection");
+      const allowedSections = isLeadership(user) ? SECTIONS : user.permissions;
+      sectionSelect.innerHTML = SECTIONS.map(sec => {
+        const ok = allowedSections.includes(sec);
+        return `<option value="${escapeHtml(sec)}" ${ok ? "" : "disabled"}>${escapeHtml(sec)} ${ok ? "" : "(غیرمجاز)"}</option>`;
+      }).join("");
+
+      const firstAllowed = SECTIONS.find(s => allowedSections.includes(s));
+      if (firstAllowed) {
+        sectionSelect.value = firstAllowed;
+      }
+
+      const submitBtn = document.querySelector("#serviceForm button[type='submit']");
+      if (!allowedSections.length) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add("opacity-50", "cursor-not-allowed");
+        document.getElementById("formPermissionHint").textContent = "هیچ بخش خدماتی برای شما فعال نیست.";
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("opacity-50", "cursor-not-allowed");
+        document.getElementById("formPermissionHint").textContent = isLeadership(user)
+          ? "دسترسی کامل به همه بخش‌ها"
+          : `مجاز در: ${allowedSections.join("، ")}`;
+      }
+
+      // Tab buttons state
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        const sec = btn.dataset.sec;
+        const isSelected = appState.currentTab === sec;
+        btn.className = isSelected
+          ? "tab-btn navy-gradient rounded-xl px-4 py-2.5 text-xs sm:text-sm font-extrabold text-gold-200 shadow cursor-pointer"
+          : "tab-btn rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs sm:text-sm font-extrabold text-navy-900 hover:bg-slate-50 cursor-pointer";
+      });
+
+      document.getElementById("sec-operations").classList.toggle("hidden", appState.currentTab !== "operations");
+      document.getElementById("sec-access").classList.toggle("hidden", appState.currentTab !== "access");
+      document.getElementById("sec-audit").classList.toggle("hidden", appState.currentTab !== "audit");
+
+      // Leadership vs Staff on Access Tab
+      const noticeBox = document.getElementById("leadershipNoticeBox");
+      const rbacPanel = document.getElementById("rbacManagerPanel");
+      if (isLeadership(user)) {
+        noticeBox.innerHTML = `<strong>حساب مدیریتی فعال (${escapeHtml(user.role)}):</strong> شما می‌توانید هر کارمند را فوراً قفل یا آزاد کنید، دستگاه مجاز او را تعیین کنید و اجازه کار در هر بخش را بدهید یا بگیرید.`;
+        rbacPanel.classList.remove("hidden");
+        renderStaffPermissionsCards();
+      } else {
+        noticeBox.innerHTML = `<strong>اطلاعیه دسترسی:</strong> تنظیم و تغییر سطح دسترسی کارمندان و قفل/آزادسازی حساب‌ها فقط در اختیار <strong>رئیس</strong> و <strong>معاون</strong> شرکت است. شما در این بخش فقط مشاهده‌کننده هستید.`;
+        rbacPanel.classList.add("hidden");
+      }
+
+      // Audit Log Visibility (Full details for President & Vice President; summary for others)
+      const clearAuditBtn = document.getElementById("clearAuditBtn");
+      clearAuditBtn.classList.toggle("hidden", !isLeadership(user));
+      renderAuditLog();
+    }
+
+    function renderStaffPermissionsCards() {
+      const grid = document.getElementById("staffPermissionsGrid");
+      grid.innerHTML = appState.users.map(u => {
+        const isExec = isLeadership(u);
+        const statusPill = u.active
+          ? `<span class="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-extrabold text-emerald-800">● فعال / مجاز</span>`
+          : `<span class="rounded-full bg-rose-100 px-3 py-1 text-[11px] font-extrabold text-rose-800">🔒 مسدود / قفل‌شده</span>`;
+
+        const sectionCheckboxes = SECTIONS.map(sec => {
+          const checked = isExec || u.permissions.includes(sec);
+          return `<label class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-800 cursor-pointer">
+            <input type="checkbox" ${checked ? "checked" : ""} ${isExec ? "disabled" : ""} onchange="toggleStaffPermission('${u.id}', '${escapeHtml(sec)}', this.checked)" class="accent-navy-900" />
+            <span>${escapeHtml(sec)}</span>
+          </label>`;
+        }).join("");
+
+        return `
+          <div class="rounded-2xl border ${u.active ? "border-slate-200 bg-white" : "border-rose-200 bg-rose-50/40"} p-4 shadow-xs space-y-3">
+            <div class="flex flex-wrap items-start justify-between gap-2">
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-sm font-extrabold text-navy-900">${escapeHtml(u.name)}</span>
+                  <span class="rounded-lg bg-navy-900 px-2 py-0.5 text-[11px] font-bold text-gold-200">${escapeHtml(u.role)}</span>
+                </div>
+                <div class="text-[11.5px] text-slate-500 mt-1">
+                  نوع دستگاه: <strong>${escapeHtml(u.deviceType)}</strong> • شناسه مجاز: <strong dir="ltr">${escapeHtml(u.allowedDeviceId)}</strong>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                ${statusPill}
+                ${!isExec ? `
+                  <button type="button" onclick="toggleStaffActive('${u.id}')" class="rounded-xl px-3 py-1.5 text-xs font-extrabold cursor-pointer ${u.active ? "bg-rose-600 text-white hover:bg-rose-700" : "bg-emerald-600 text-white hover:bg-emerald-700"}">
+                    ${u.active ? "🔒 بستن / قفل حساب" : "🔓 آزاد کردن حساب"}
+                  </button>
+                ` : ""}
+              </div>
+            </div>
+
+            ${!isExec ? `
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">شناسه دستگاه مجاز</label>
+                  <select onchange="changeStaffDevice('${u.id}', this.value)" class="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold">
+                    <option value="DESKTOP-OFFICE-01" ${u.allowedDeviceId === "DESKTOP-OFFICE-01" ? "selected" : ""}>DESKTOP-OFFICE-01 (دسکتاپ دفتر)</option>
+                    <option value="MOBILE-STAFF-02" ${u.allowedDeviceId === "MOBILE-STAFF-02" ? "selected" : ""}>MOBILE-STAFF-02 (موبایل مجاز)</option>
+                    <option value="ANY" ${u.allowedDeviceId === "ANY" ? "selected" : ""}>هر دستگاه تاییدشده (ANY)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">وضعیت حضور فعلی</label>
+                  <div class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-700">
+                    ${u.online && u.active ? "آنلاین در سیستم" : "آفلاین / غیرفعال"}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="text-[11px] font-bold text-slate-600 mb-1.5">بخش‌های مجاز برای کار:</div>
+                <div class="flex flex-wrap gap-1.5">${sectionCheckboxes}</div>
+              </div>
+            ` : `
+              <div class="rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-900 font-semibold">
+                حساب رهبری شرکت — دارای صلاحیت کامل مدیریت، قفل و آزادسازی دسترسی سایر کاربران.
+              </div>
+            `}
+          </div>
+        `;
+      }).join("");
+    }
+
+    window.toggleStaffActive = function(userId) {
+      const actor = getCurrentUser();
+      if (!isLeadership(actor)) {
+        showToast("فقط رئیس و معاون اجازه تغییر وضعیت حساب‌ها را دارند.");
+        return;
+      }
+      const target = appState.users.find(u => u.id === userId);
+      if (!target || isLeadership(target)) return;
+
+      target.active = !target.active;
+      if (!target.active) {
+        target.online = false;
+      }
+      addAuditLog(
+        target.active
+          ? `حساب «${target.name}» توسط مدیریت آزاد و فعال شد.`
+          : `حساب «${target.name}» توسط مدیریت مسدود و قفل شد.`
+      );
+      persistState();
+      renderAll();
+      showToast(target.active ? `حساب ${target.name} فعال شد.` : `حساب ${target.name} فوراً مسدود شد.`);
+    };
+
+    window.changeStaffDevice = function(userId, newDeviceId) {
+      const actor = getCurrentUser();
+      if (!isLeadership(actor)) {
+        showToast("فقط رئیس و معاون می‌توانند دستگاه مجاز را تغییر دهند.");
+        return;
+      }
+      const target = appState.users.find(u => u.id === userId);
+      if (!target || isLeadership(target)) return;
+
+      target.allowedDeviceId = newDeviceId;
+      target.deviceType = newDeviceId.startsWith("MOBILE") ? "موبایل" : "دسکتاپ";
+      addAuditLog(`دستگاه مجاز «${target.name}» به «${newDeviceId}» تغییر یافت.`);
+      persistState();
+      renderAll();
+      showToast("شناسه دستگاه مجاز به‌روزرسانی شد.");
+    };
+
+    window.toggleStaffPermission = function(userId, sectionName, isChecked) {
+      const actor = getCurrentUser();
+      if (!isLeadership(actor)) {
+        showToast("فقط رئیس و معاون اجازه تغییر دسترسی بخش‌ها را دارند.");
+        return;
+      }
+      const target = appState.users.find(u => u.id === userId);
+      if (!target || isLeadership(target)) return;
+
+      const set = new Set(target.permissions || []);
+      if (isChecked) set.add(sectionName);
+      else set.delete(sectionName);
+      target.permissions = Array.from(set);
+
+      addAuditLog(
+        isChecked
+          ? `دسترسی «${sectionName}» برای «${target.name}» فعال شد.`
+          : `دسترسی «${sectionName}» از «${target.name}» گرفته شد.`
+      );
+      persistState();
+      renderAll();
+      showToast("دسترسی بخش‌ها ذخیره شد.");
+    };
+
+    function renderAuditLog() {
+      const user = getCurrentUser();
+      const listEl = document.getElementById("auditLogList");
+      if (!isLeadership(user)) {
+        listEl.innerHTML = `
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600">
+            گزارش کامل ورود و خروج و فعالیت‌های کارمندان صرفاً برای <strong>رئیس</strong> و <strong>معاون</strong> نمایش داده می‌شود. لیست کاربران فعال فعلی در نوار بالای صفحه برای همه قابل مشاهده است.
+          </div>
+        `;
+        return;
+      }
+
+      if (!appState.auditLogs.length) {
+        listEl.innerHTML = `<div class="rounded-xl border border-slate-200 bg-slate-50 p-6 text-center text-xs text-slate-500">هنوز گزارشی ثبت نشده است.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = appState.auditLogs.map(log => `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 py-2.5 text-xs">
+          <div>
+            <span class="font-extrabold text-navy-900">${escapeHtml(log.actor)}</span>
+            <span class="mx-1.5 text-slate-400">•</span>
+            <span class="text-slate-700">${escapeHtml(log.detail)}</span>
+          </div>
+          <div class="flex items-center gap-2 text-[11px] text-slate-500 shrink-0">
+            <span class="rounded bg-white px-2 py-0.5 border border-slate-200" dir="ltr">${escapeHtml(log.device)}</span>
+            <span dir="ltr">${escapeHtml(log.time)}</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderRecordsList() {
+      const user = getCurrentUser();
+      const allowedSections = isLeadership(user) ? SECTIONS : user.permissions;
+      const query = document.getElementById("recordSearchInput").value.trim().toLowerCase();
+      const listEl = document.getElementById("recordsList");
+
+      const visibleRecords = appState.records.filter(rec => {
+        const secOk = allowedSections.includes(rec.section);
+        const searchOk = !query ||
+          (rec.passenger || "").toLowerCase().includes(query) ||
+          (rec.code || "").toLowerCase().includes(query) ||
+          (rec.route || "").toLowerCase().includes(query) ||
+          (rec.section || "").toLowerCase().includes(query);
+        return secOk && searchOk;
+      });
+
+      if (!visibleRecords.length) {
+        listEl.innerHTML = `<div class="rounded-xl border border-slate-200 bg-slate-50 p-6 text-center text-xs text-slate-500">هیچ پرونده‌ای در بخش‌های مجاز شما یافت نشد.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = visibleRecords.map(rec => `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-200 border-r-4 border-r-navy-800 bg-slate-50/70 p-3.5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="rounded-md bg-navy-900 px-2 py-0.5 text-[11px] font-bold text-gold-200">#${escapeHtml(rec.code || "—")}</span>
+              <span class="text-sm font-extrabold text-navy-900">${escapeHtml(rec.passenger)}</span>
+              <span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold text-amber-900">${escapeHtml(rec.section)}</span>
+            </div>
+            <div class="text-xs text-slate-600">
+              ${rec.amount ? `مبلغ: <strong class="text-emerald-800">${escapeHtml(rec.amount)}</strong>` : ""}
+              ${rec.route ? ` • مسیر: ${escapeHtml(rec.route)}` : ""}
+              ${rec.date ? ` • تاریخ: ${escapeHtml(rec.date)}` : ""}
+            </div>
+            ${rec.notes ? `<div class="text-xs text-slate-500">${escapeHtml(rec.notes)}</div>` : ""}
+          </div>
+          <div class="flex items-center gap-2 shrink-0 no-print">
+            <button type="button" onclick="loadRecordIntoReceipt('${rec.id}')" class="gold-gradient rounded-lg px-3 py-1.5 text-xs font-extrabold text-navy-950 hover:brightness-105 cursor-pointer">
+              مشاهده رسید
+            </button>
+            <button type="button" onclick="deleteRecord('${rec.id}')" class="rounded-lg bg-rose-100 px-2.5 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-200 cursor-pointer">
+              حذف
+            </button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function applyReceiptPreview(rec) {
+      activeReceiptData = rec || {};
+      const user = getCurrentUser();
+      document.getElementById("recCodeView").textContent = `#${activeReceiptData.code || "KA-1001"}`;
+      document.getElementById("recPassengerView").textContent = activeReceiptData.passenger || "مسافر / مشتری نمونه";
+      document.getElementById("recSectionView").textContent = activeReceiptData.section || "تکت طیاره";
+      document.getElementById("recAmountView").textContent = activeReceiptData.amount || "تعیین‌نشده";
+      const routeDate = [activeReceiptData.date, activeReceiptData.route].filter(Boolean).join(" | ");
+      document.getElementById("recRouteDateView").textContent = routeDate || "—";
+      const notesPhone = [activeReceiptData.phone ? `تلفن: ${activeReceiptData.phone}` : "", activeReceiptData.notes || ""].filter(Boolean).join(" — ");
+      document.getElementById("recNotesView").textContent = notesPhone || "رسید رسمی صادرشده از کندهار افغان سیاحتی شرکت";
+      document.getElementById("recIssuerView").textContent = activeReceiptData.issuer || `${user.name} (${user.role})`;
+      document.getElementById("recIssuedDateView").textContent = `تاریخ صدور: ${activeReceiptData.issuedAt || "2026-11-22"}`;
+    }
+
+    window.loadRecordIntoReceipt = function(id) {
+      const found = appState.records.find(r => r.id === id);
+      if (found) {
+        applyReceiptPreview(found);
+        document.getElementById("printableReceiptArea").scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    };
+
+    window.deleteRecord = function(id) {
+      const found = appState.records.find(r => r.id === id);
+      appState.records = appState.records.filter(r => r.id !== id);
+      addAuditLog(`پرونده «${found ? found.passenger : id}» حذف شد.`);
+      persistState();
+      renderAll();
+      showToast("پرونده حذف شد.");
+    };
+
+    function getFormValues() {
+      const user = getCurrentUser();
+      return {
+        code: document.getElementById("fCode").value.trim() || `KA-${Math.floor(1000 + Math.random() * 9000)}`,
+        passenger: document.getElementById("fPassenger").value.trim(),
+        section: document.getElementById("fSection").value,
+        amount: document.getElementById("fAmount").value.trim(),
+        date: document.getElementById("fDate").value,
+        route: document.getElementById("fRoute").value.trim(),
+        phone: document.getElementById("fPhone").value.trim(),
+        notes: document.getElementById("fNotes").value.trim(),
+        issuer: `${user.name} (${user.role})`,
+        issuedAt: "2026-11-22"
+      };
+    }
+
+    document.getElementById("serviceForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const user = getCurrentUser();
+      const data = getFormValues();
+      if (!data.passenger) return;
+
+      const allowedSections = isLeadership(user) ? SECTIONS : user.permissions;
+      if (!allowedSections.includes(data.section)) {
+        showToast(`شما در بخش «${data.section}» مجوز ثبت ندارید.`);
+        return;
+      }
+
+      const record = {
+        id: "rec-" + Date.now(),
+        ...data
+      };
+      appState.records.unshift(record);
+      addAuditLog(`پرونده جدید در بخش «${record.section}» برای «${record.passenger}» ثبت شد.`);
+      persistState();
+      applyReceiptPreview(record);
+      this.reset();
+      document.getElementById("fDate").value = "2026-11-22";
+      renderAll();
+      showToast("پرونده ذخیره و در رسید نمایش داده شد.");
+    });
+
+    document.getElementById("syncPreviewBtn").addEventListener("click", function() {
+      applyReceiptPreview(getFormValues());
+      showToast("پیش‌نمایش رسید به‌روزرسانی شد.");
+    });
+
+    document.getElementById("printReceiptBtn").addEventListener("click", function() {
+      addAuditLog(`رسید «${activeReceiptData.passenger || activeReceiptData.code || "رسمی"}» برای چاپ/PDF آماده شد.`);
+      persistState();
+      renderAuditLog();
+      window.print();
+    });
+
+    document.getElementById("recordSearchInput").addEventListener("input", renderRecordsList);
+
+    document.getElementById("activeUserSelect").addEventListener("change", function(e) {
+      const nextId = e.target.value;
+      appState.activeUserId = nextId;
+      const u = getCurrentUser();
+      if (u && u.active) {
+        u.online = true;
+        addAuditLog(`وارد حساب «${u.name} (${u.role})» شد.`, u);
+      } else if (u) {
+        addAuditLog(`تلاش برای ورود به حساب مسدود «${u.name}» مسدود شد.`, u);
+      }
+      persistState();
+      renderAll();
+    });
+
+    window.quickSwitchToRole = function(roleName) {
+      const found = appState.users.find(u => u.role === roleName);
+      if (found) {
+        found.active = true;
+        found.online = true;
+        appState.activeUserId = found.id;
+        appState.currentTab = "access";
+        addAuditLog(`ورود مدیریتی با نقش «${roleName}» انجام شد.`, found);
+        persistState();
+        renderAll();
+      }
+    };
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        appState.currentTab = btn.dataset.sec;
+        persistState();
+        renderAccessGateAndTabs();
+      });
+    });
+
+    document.getElementById("addEmployeeBtn").addEventListener("click", function() {
+      const actor = getCurrentUser();
+      if (!isLeadership(actor)) {
+        showToast("فقط رئیس و معاون می‌توانند حساب کارمند اضافه کنند.");
+        return;
+      }
+      const name = prompt("نام و نام خانوادگی کارمند جدید را وارد کنید:");
+      if (!name || !name.trim()) return;
+      const newStaff = {
+        id: "u-staff-" + Date.now(),
+        name: name.trim(),
+        role: "کارمند",
+        active: false,
+        online: false,
+        deviceType: "موبایل",
+        allowedDeviceId: "MOBILE-STAFF-02",
+        permissions: ["تکت طیاره"]
+      };
+      appState.users.push(newStaff);
+      addAuditLog(`حساب کارمند جدید «${newStaff.name}» ایجاد شد (در وضعیت قفل/در انتظار تایید).`);
+      persistState();
+      renderAll();
+      showToast("حساب کارمند اضافه شد؛ در صورت نیاز وضعیت را فعال کنید.");
+    });
+
+    document.getElementById("clearAuditBtn").addEventListener("click", function() {
+      const actor = getCurrentUser();
+      if (!isLeadership(actor)) return;
+      appState.auditLogs = [];
+      addAuditLog("گزارش‌های فعالیت توسط مدیریت پاک‌سازی شد.");
+      persistState();
+      renderAuditLog();
+      showToast("گزارش فعالیت‌ها به‌روزرسانی شد.");
+    });
+
+    // Logo Upload & Download
+    document.getElementById("logoFileInput").addEventListener("change", function(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function() {
+        appState.customLogoDataUrl = reader.result;
+        addAuditLog("لوگوی رسمی شرکت تغییر و ذخیره شد.");
+        persistState();
+        renderLogosEverywhere();
+        showToast("لوگوی جدید در برنامه و رسیدها اعمال شد.");
+      };
+      reader.readAsDataURL(file);
+      this.value = "";
+    });
+
+    document.getElementById("downloadIcoBtn").addEventListener("click", function() {
+      if (appState.customLogoDataUrl) {
+        const a = document.createElement("a");
+        a.href = appState.customLogoDataUrl;
+        a.download = "kandahar-afghan-travel-logo.png";
+        a.click();
+        showToast("لوگوی ذخیره‌شده دانلود شد.");
+        return;
+      }
+      const svgMarkup = document.getElementById("kandaharEmblemTemplate").innerHTML.trim();
+      const fullSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">${svgMarkup.replace('<svg viewBox="0 0 240 240" class="w-full h-full" xmlns="http://www.w3.org/2000/svg" aria-label="نشان کندهار افغان سیاحتی شرکت">', '').replace(/<\/svg>$/, '')}</svg>`;
+      const img = new Image();
+      const blob = new Blob([fullSvg], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      img.onload = function() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, 512, 512);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(pngBlob => {
+          const pngUrl = URL.createObjectURL(pngBlob);
+          const a = document.createElement("a");
+          a.href = pngUrl;
+          a.download = "kandahar-afghan-travel-icon-512.png";
+          a.click();
+          URL.revokeObjectURL(pngUrl);
+          showToast("آیکون 512x512 کندهار افغان سیاحتی شرکت دانلود شد.");
+        }, "image/png");
+      };
+      img.src = url;
+    });
+
+    // Store Modal & PWA Install Prompt
+    const storeModal = document.getElementById("storeModal");
+    document.getElementById("openStoreModalBtn").addEventListener("click", () => {
+      storeModal.classList.remove("hidden");
+      storeModal.classList.add("flex");
+    });
+    document.getElementById("closeStoreModalBtn").addEventListener("click", () => {
+      storeModal.classList.add("hidden");
+      storeModal.classList.remove("flex");
+    });
+    storeModal.addEventListener("click", (e) => {
+      if (e.target === storeModal) {
+        storeModal.classList.add("hidden");
+        storeModal.classList.remove("flex");
+      }
+    });
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      document.getElementById("directInstallBtn").classList.remove("hidden");
+    });
+
+    async function triggerInstall() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        const choice = await deferredInstallPrompt.userChoice;
+        if (choice && choice.outcome === "accepted") {
+          showToast("اپلیکیشن با موفقیت روی دستگاه نصب شد.");
+        }
+        deferredInstallPrompt = null;
+        document.getElementById("directInstallBtn").classList.add("hidden");
+      } else {
+        showToast("از منوی مرورگر گزینه Add to Home Screen / Install را بزنید.");
+      }
+    }
+
+    document.getElementById("directInstallBtn").addEventListener("click", triggerInstall);
+    document.getElementById("modalInstallBtn").addEventListener("click", triggerInstall);
+
+    function renderAll() {
+      renderLogosEverywhere();
+      renderUserSwitcher();
+      renderLiveActiveUsers();
+      renderAccessGateAndTabs();
+      renderRecordsList();
+      applyReceiptPreview(activeReceiptData);
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
