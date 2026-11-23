@@ -34,7 +34,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Vazirmatn", Tahoma, sans-serif; }
     body { background: var(--bg); color: var(--text); font-size: 13.5px; line-height: 1.6; min-height: 100vh; }
 
-    /* صفحه قفل ورود امنیتی برای دسترسی انحصاری شرکت */
     .lock-screen {
       position: fixed; inset: 0;
       background: linear-gradient(135deg, #071e34 0%, #0f4c81 65%, #0d9488 100%);
@@ -50,7 +49,7 @@
       border-radius: 8px; padding: 8px 10px; font-size: 12px; margin-bottom: 12px;
     }
 
-    .app { display: grid; grid-template-columns: 275px 1fr; min-height: 100vh; }
+    .app { display: grid; grid-template-columns: 278px 1fr; min-height: 100vh; }
     .sidebar {
       background: linear-gradient(180deg, #08243e 0%, #0f3d66 100%);
       color: #e2e8f0; padding: 14px 12px; display: flex; flex-direction: column;
@@ -113,6 +112,12 @@
       padding: 12px; margin-bottom: 14px;
     }
     .scan-status { font-size: 12px; color: #0369a1; margin-top: 8px; font-weight: 600; }
+
+    .drive-banner {
+      background: #ecfdf5; border: 1px solid #a7f3d0; border-right: 4px solid var(--success);
+      color: #065f46; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    }
 
     .alert-box {
       background: #fffbeb; border: 1px solid #fcd34d; border-right: 4px solid var(--warning);
@@ -191,11 +196,15 @@
       display: none; align-items: center; justify-content: center; padding: 14px; z-index: 90;
     }
     .modal-bg.open { display: flex; }
-    .modal { background: #fff; border-radius: 12px; max-width: 820px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 18px; }
+    .modal { background: #fff; border-radius: 12px; max-width: 860px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 18px; }
     .modal-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 9px; margin-bottom: 12px; }
 
     .receipt-box { border: 1.5px dashed #475569; border-radius: 10px; padding: 15px; background: #fcfcfd; }
     .receipt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; margin: 10px 0; font-size: 13px; }
+    .receipt-law {
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+      padding: 9px 11px; margin-top: 10px; font-size: 11.5px; color: #334155; white-space: pre-line;
+    }
     .qr-box { display: inline-flex; flex-direction: column; align-items: center; border: 1px solid var(--border); border-radius: 7px; padding: 5px; background: #fff; }
 
     .toast {
@@ -211,7 +220,7 @@
 
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
-      .sidebar { position: fixed; right: -285px; top: 0; bottom: 0; width: 275px; transition: right 0.2s ease; }
+      .sidebar { position: fixed; right: -285px; top: 0; bottom: 0; width: 278px; transition: right 0.2s ease; }
       .sidebar.open { right: 0; }
       .menu-btn { display: inline-flex; }
       .content { padding: 10px; }
@@ -225,12 +234,11 @@
   </style>
 </head>
 <body>
-  <!-- صفحه قفل ورود امنیتی برای دسترسی انحصاری شرکت -->
   <div class="lock-screen" id="lockScreen">
     <div class="lock-card">
       <img id="lockLogo" src="icon.png" onerror="this.src=fallbackLogo()" style="width:72px;height:72px;border-radius:14px;object-fit:cover;margin-bottom:10px;border:2px solid var(--primary);" alt="لوگو" />
       <h2 style="font-size:17px;color:var(--primary-dark);" id="lockCompany">کندهار افغان سیاحتی شرکت</h2>
-      <p style="font-size:12px;color:var(--muted);margin:5px 0 10px;">دسترسی انحصاری پرسنل شرکت — رمز ورود را وارد کنید</p>
+      <p style="font-size:12px;color:var(--muted);margin:5px 0 10px;">دسترسی انحصاری پرسنل شرکت — برای هر بار ورود رمز را وارد کنید</p>
       <div class="qr-target-banner" id="qrTargetBanner" style="display:none;"></div>
       <div class="field" style="text-align:right;margin-bottom:10px;">
         <label>انتخاب حساب کارمند / میز کاری</label>
@@ -261,7 +269,7 @@
         <span>📝 ثبت نام مشتری و ویزا</span><span class="nav-pill" id="pillVisas">0</span>
       </button>
       <button class="nav-btn" data-tab="dashboard" onclick="goTab('dashboard')">
-        <span>📊 داشبورد و اطلاعیه‌ها</span><span class="nav-pill" id="pillAlerts">0</span>
+        <span>📊 داشبورد و وضعیت ویزا</span><span class="nav-pill" id="pillAlerts">0</span>
       </button>
       <button class="nav-btn" data-tab="tickets" onclick="goTab('tickets')">
         <span>✈️ صدور تکت هواپیما</span><span class="nav-pill" id="pillTickets">0</span>
@@ -276,10 +284,10 @@
         <span>💳 مقروضین دیگر (۴ اسعار)</span><span class="nav-pill" id="pillDebt">0</span>
       </button>
       <button class="nav-btn" data-tab="passports" onclick="goTab('passports')">
-        <span>🛂 ثبت و تحویل پاسپورت</span><span class="nav-pill" id="pillPass">0</span>
+        <span>🗄️ بایگانی و تحویل پاسپورت</span><span class="nav-pill" id="pillPass">0</span>
       </button>
       <button class="nav-btn" data-tab="customers" onclick="goTab('customers')">
-        <span>🧾 قبض QR و پیام واتساپ</span><span class="nav-pill" id="pillCust">0</span>
+        <span>🧾 قبض QR، دسترسی خصوصی و واتساپ</span><span class="nav-pill" id="pillCust">0</span>
       </button>
 
       <div class="nav-group">مدیریت و تنظیمات</div>
@@ -287,16 +295,16 @@
         <span>💱 نرخ اسعار و معادل سرمایه</span>
       </button>
       <button class="nav-btn" data-tab="gmails" onclick="goTab('gmails')">
-        <span>📧 جیمیل‌های ویزا و بکاپ</span><span class="nav-pill" id="pillGmail">0</span>
+        <span>📧 جیمیل‌های ثبت ویزا</span><span class="nav-pill" id="pillGmail">0</span>
       </button>
       <button class="nav-btn" data-tab="docs" onclick="goTab('docs')">
-        <span>📁 نگهداری اسناد و فایل‌ها</span><span class="nav-pill" id="pillDocs">0</span>
+        <span>📁 اسناد، درایو E و پوشه شخصی</span><span class="nav-pill" id="pillDocs">0</span>
       </button>
       <button class="nav-btn" data-tab="audit" onclick="goTab('audit')">
         <span>🕵️ تاریخچه فعالیت کارمندان</span><span class="nav-pill" id="pillAudit">0</span>
       </button>
       <button class="nav-btn" data-tab="office" onclick="goTab('office')">
-        <span>⚙️ لوگو، جیمیل بکاپ و رمزها</span>
+        <span>⚙️ لوگو، جیمیل روزانه، قوانین و رمزها</span>
       </button>
 
       <div class="nav-group">بخش‌های مالی (با رمز جداگانه)</div>
@@ -319,11 +327,12 @@
         <div class="topbar-left">
           <button class="btn btn-outline btn-sm menu-btn" onclick="openMenu()">☰ منو</button>
           <span class="page-title" id="pageTitle">ثبت یا ویرایش معلومات مشتری / ویزا</span>
-          <span class="save-badge" id="saveBadge">✓ ذخیره دوبل فعال</span>
+          <span class="save-badge" id="saveBadge">✓ ذخیره شد</span>
         </div>
         <div class="topbar-right">
           <select id="userSwitch" style="width:auto;min-width:155px;" onchange="switchUser(this.value)"></select>
-          <button class="btn btn-gmail btn-sm" onclick="backupNowToCompanyGmail(false)">📧 بکاپ جیمیل</button>
+          <button class="btn btn-teal btn-sm" onclick="connectEDriveFolder()">💾 اتصال پوشه درایو E</button>
+          <button class="btn btn-gmail btn-sm" onclick="saveDailyToCompanyGmail()">📧 ذخیره روزانه در جیمیل شرکت</button>
           <button class="btn btn-success btn-sm" onclick="downloadBackup()">دانلود بکاپ</button>
           <label class="btn btn-warning btn-sm" style="margin:0;">
             بازیابی
@@ -349,8 +358,8 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const DB_KEY = "KANDAHAR_AFGHAN_TRAVEL_UNIFIED_V11";
-    const IDB_NAME = "KandaharTravelPermanentDB_V11";
+    const DB_KEY = "KANDAHAR_AFGHAN_TRAVEL_UNIFIED_V13";
+    const IDB_NAME = "KandaharTravelPermanentDB_V13";
     const IDB_STORE = "state_store";
     const FINANCE_TABS = ["expenses", "reports"];
 
@@ -363,7 +372,8 @@
 
     let hasUnsaved = false;
     let pendingQrCaseId = "";
-    let searchFilter = { visas: "", excel: "", tickets: "", debtors: "" };
+    let eDriveRootHandle = null;
+    let searchFilter = { visas: "", excel: "", tickets: "", debtors: "", archive: "" };
 
     function currSym(c) { return (CURRENCIES[c] || CURRENCIES.AFN).symbol; }
     function currOpts(sel = "AFN") {
@@ -407,13 +417,14 @@
     function emptyData() {
       return {
         unlocked: false,
-        lockOnQrScan: true,
         financeUnlocked: false,
         appPassword: "123456",
         financePassword: "9999",
         presidentApproved: false,
         viceApproved: false,
         companyBackupGmail: "",
+        eDriveFolderLabel: "E:\\Kandahar_Travel_Clients",
+        lastDailyGmailSave: "",
         tab: "visas",
         userId: "U-1",
         ratesToUSD: { USD: 1, AFN: 70.5, EUR: 0.92, PKR: 278.5 },
@@ -422,7 +433,9 @@
           phone: "",
           address: "کندهار، افغانستان",
           logo: "",
-          defaultReceiptNote: "این رسید با QR امنیتی محافظت شده و برای پیگیری داخلی شرکت است."
+          defaultReceiptNote: "این رسید با QR امنیتی محافظت شده و برای پیگیری داخلی شرکت است.",
+          visaLawText: "قانون اخذ ویزا: زمان صدور ویزا تابع بررسی سفارت/کنسولگری است و هزینه‌های انجام‌شده پس از طی مراحل قابل استرداد نیست.",
+          companyLawText: "قانون شرکت در قبال مشتری: شرکت متعهد به پیگیری دقیق پرونده، حفظ امانت پاسپورت و اسناد و تحویل به‌موقع رسید و ویزا می‌باشد."
         },
         team: [
           { id: "U-1", name: "حاجی محمد اسماعیل رفیقی", job: "رئیس شرکت" },
@@ -444,9 +457,11 @@
     }
 
     let state = loadState();
+    state.unlocked = false;
+
     function loadState() {
       try {
-        const raw = localStorage.getItem(DB_KEY) || localStorage.getItem("KANDAHAR_AFGHAN_TRAVEL_UNIFIED_V10");
+        const raw = localStorage.getItem(DB_KEY) || localStorage.getItem("KANDAHAR_AFGHAN_TRAVEL_UNIFIED_V12");
         if (raw) {
           const parsed = JSON.parse(raw);
           const base = emptyData();
@@ -475,15 +490,27 @@
       saveToIDB(state);
       hasUnsaved = false;
       const b = document.getElementById("saveBadge");
-      if (b) { b.className = "save-badge"; b.textContent = "✓ ذخیره دوبل انجام شد"; }
+      if (b) { b.className = "save-badge"; b.textContent = "✓ ذخیره شد"; }
       syncChrome();
     }
 
     function markUnsaved() {
       hasUnsaved = true;
       const b = document.getElementById("saveBadge");
-      if (b) { b.className = "save-badge unsaved"; b.textContent = "⚠️ ذخیره نشده"; }
+      if (b) { b.className = "save-badge unsaved"; b.textContent = "⚠️ کار ناتمام / ذخیره نشده"; }
     }
+
+    function checkUnfinishedBeforeLeave() {
+      if (!hasUnsaved) return true;
+      return confirm("⚠️ کارها هنوز ذخیره نشده‌اند! آیا مطمئن هستید بدون ذخیره خارج شوید؟");
+    }
+
+    window.addEventListener("beforeunload", e => {
+      if (hasUnsaved) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    });
 
     function notify(msg, err = false) {
       const t = document.getElementById("toast");
@@ -491,7 +518,7 @@
       t.style.background = err ? "#991b1b" : "#0f172a";
       t.classList.add("show");
       clearTimeout(window._tt);
-      window._tt = setTimeout(() => t.classList.remove("show"), 3500);
+      window._tt = setTimeout(() => t.classList.remove("show"), 3600);
     }
 
     function me() { return state.team.find(x => x.id === state.userId) || state.team[0]; }
@@ -502,16 +529,18 @@
       if (state.auditLogs.length > 200) state.auditLogs.length = 200;
     }
 
-    function switchUser(id) { state.userId = id; addAudit(`تغییر کاربر به ${me().name}`); saveState(); render(); }
+    function switchUser(id) {
+      if (!checkUnfinishedBeforeLeave()) return;
+      state.userId = id; addAudit(`تغییر کاربر به ${me().name}`); saveState(); render();
+    }
 
-    /* پردازش اسکن QR Code روی بیل / رسید */
     function handleQrHash() {
       const h = decodeURIComponent(window.location.hash || "");
       if (h.startsWith("#qr=")) {
         const caseId = h.replace("#qr=", "").trim();
         if (caseId) {
           pendingQrCaseId = caseId;
-          if (state.lockOnQrScan !== false) state.unlocked = false;
+          state.unlocked = false;
           addAudit(`اسکن QR رسید با شناسه ${caseId}`);
           saveState();
         }
@@ -538,7 +567,7 @@
       if (document.getElementById("appPassInput").value === state.appPassword) {
         state.unlocked = true;
         document.getElementById("appPassInput").value = "";
-        addAudit("ورود موفق به سیستم شرکت");
+        addAudit("ورود با رمز به سیستم شرکت");
         saveState(); render();
         applyPendingQrCase();
       } else {
@@ -547,6 +576,7 @@
     }
 
     function lockApp() {
+      if (!checkUnfinishedBeforeLeave()) return;
       state.unlocked = false; state.financeUnlocked = false;
       saveState(); render();
     }
@@ -560,6 +590,7 @@
     }
 
     function goTab(t) {
+      if (!checkUnfinishedBeforeLeave()) return;
       if (FINANCE_TABS.includes(t) && !ensureFinance()) return;
       state.tab = t; saveState(); closeMenu(); render();
     }
@@ -618,7 +649,7 @@
         const img = new Image();
         img.onload = () => {
           const c = document.createElement("canvas");
-          let w = img.width, h = img.height, max = 300;
+          let w = img.width, h = img.height, max = 320;
           if (w > h && w > max) { h = h * max / w; w = max; }
           else if (h >= w && h > max) { w = w * max / h; h = max; }
           c.width = w; c.height = h;
@@ -626,6 +657,7 @@
           const url = c.toDataURL("image/jpeg", 0.82);
           document.getElementById(hid).value = url;
           document.getElementById(pid).src = url;
+          markUnsaved();
           if (isLogo) { state.office.logo = url; saveState(); notify("لوگو ذخیره شد."); }
         };
         img.src = e.target.result;
@@ -633,29 +665,29 @@
       r.readAsDataURL(f);
     }
 
-    /* اسکن و استخراج خودکار مشخصات پاسپورت افغانستانی (MRZ) */
     async function scanPassportFile(ev) {
       const file = ev.target.files[0];
       if (!file) return;
       const statusEl = document.getElementById("passportScanStatus");
-      statusEl.textContent = "⏳ در حال خواندن مشخصات پاسپورت با دوربین/اسکنر...";
+      statusEl.textContent = "⏳ در حال خواندن مشخصات پاسپورت افغانستانی...";
 
       const reader = new FileReader();
       reader.onload = async () => {
         const imgUrl = reader.result;
         document.getElementById("vPhoto").value = imgUrl;
         document.getElementById("vPhotoPrev").src = imgUrl;
+        markUnsaved();
 
         try {
           if (!window.Tesseract) {
-            statusEl.textContent = "⚠️ کتابخانه OCR در دسترس نیست؛ لطفاً مشخصات را بررسی یا دستی تکمیل کنید.";
+            statusEl.textContent = "⚠️ اسکن خودکار در دسترس نیست؛ لطفاً نام و شماره پاسپورت را بررسی کنید.";
             return;
           }
           const res = await Tesseract.recognize(imgUrl, "eng");
           const rawText = (res?.data?.text || "").toUpperCase();
           parseAfghanPassportText(rawText, statusEl);
         } catch (err) {
-          statusEl.textContent = "⚠️ خطا در خواندن خودکار تصویر؛ لطفاً مشخصات را بررسی کنید.";
+          statusEl.textContent = "⚠️ خطا در خواندن تصویر؛ لطفاً مشخصات را بررسی یا دستی وارد کنید.";
         }
       };
       reader.readAsDataURL(file);
@@ -672,19 +704,14 @@
       if (mrzLines.length >= 2) {
         const line1 = mrzLines[0];
         const line2 = mrzLines[1];
-
-        // استخراج نام خانوادگی و نام از خط اول MRZ (مثال: P<AFGMORADI<<MASOOD<<<<...)
         const namePart = line1.replace(/^P.?AFG/, "").replace(/^<+/, "");
         const parts = namePart.split("<<");
         if (parts[0]) foundLastName = parts[0].replace(/<+/g, " ").trim();
         if (parts[1]) foundFirstName = parts[1].replace(/<+/g, " ").trim();
-
-        // استخراج شماره پاسپورت از ابتدای خط دوم MRZ
         const passMatch = line2.match(/^([A-Z0-9]{6,10})</);
         if (passMatch && passMatch[1]) foundPassport = passMatch[1];
       }
 
-      // پشتیبان: جستجوی الگوی شماره پاسپورت در متن کلی
       if (!foundPassport) {
         const pMatch = rawText.match(/\b([A-Z]{1,2}\d{6,8}|P\d{7,8})\b/);
         if (pMatch) foundPassport = pMatch[1];
@@ -694,19 +721,16 @@
       if (foundLastName) document.getElementById("vLastName").value = foundLastName;
       if (foundPassport) document.getElementById("vPassport").value = foundPassport;
 
-      markUnsaved();
       if (foundFirstName || foundLastName || foundPassport) {
-        statusEl.textContent = `✅ استخراج شد — نام: ${foundFirstName || "—"} | نام خانوادگی: ${foundLastName || "—"} | پاسپورت: ${foundPassport || "—"} (پیش از ذخیره کنترل کنید)`;
-        notify("مشخصات پاسپورت در فرم ثبت شد.");
+        statusEl.textContent = `✅ استخراج شد — نام: ${foundFirstName || "—"} | نام خانوادگی: ${foundLastName || "—"} | پاسپورت: ${foundPassport || "—"}`;
+        notify("مشخصات پاسپورت در فرم درج شد.");
       } else {
-        statusEl.textContent = "⚠️ تصویر پاسپورت ثبت شد؛ خط MRZ واضح نبود، نام و شماره پاسپورت را بررسی/تکمیل کنید.";
+        statusEl.textContent = "⚠️ خط MRZ واضح نبود؛ نام و شماره پاسپورت را کنترل یا تکمیل کنید.";
       }
     }
 
-    /* تولید QR Code اختصاصی که با اسکن به سیستم شرکت وصل می‌شود */
     function buildQrPayloadUrl(caseId) {
-      const base = `${window.location.origin}${window.location.pathname}`;
-      return `${base}#qr=${encodeURIComponent(caseId)}`;
+      return `${window.location.origin}${window.location.pathname}#qr=${encodeURIComponent(caseId)}`;
     }
 
     function generateQrSvg(caseId) {
@@ -725,33 +749,215 @@
       return `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 75 75">${cells}</svg>`;
     }
 
+    function statusLabel(st) {
+      if (st === "Arrived") return "✅ ویزا گرینتد / آمده";
+      if (st === "Rejected") return "❌ ویزا ریجکت / رد شده";
+      if (st === "Delivered") return "📄 تحویل داده شده";
+      return "⏳ در انتظار";
+    }
+
     function buildWaMessage(v) {
       const sym = currSym(v.currency || "AFN");
       const due = Math.max(0, Number(v.total || 0) - Number(v.paid || 0));
-      const st = v.status === "Arrived" ? "✅ ویزای شما صادر و آماده تحویل است."
-               : v.status === "Rejected" ? "❌ درخواست ویزای شما رد شده است. لطفاً تماس بگیرید."
-               : v.status === "Delivered" ? "📄 ویزا و پاسپورت شما تحویل داده شد."
-               : "⏳ پرونده ویزای شما ثبت شد و در حال طی مراحل است.";
-      return `سلام محترم ${v.firstName} ${v.lastName}\n${st}\n🏢 ${state.office.name}\n🛂 پاسپورت: ${v.passport || "—"}\n🔖 ریفرنس: ${v.visaReference || "—"}\n💰 باقی‌مانده حساب: ${sym}${fmt(due)}`;
+      return `سلام محترم ${v.firstName} ${v.lastName}\nوضعیت: ${statusLabel(v.status)}\n🏢 ${state.office.name}\n🛂 پاسپورت: ${v.passport || "—"}\n🔖 ریفرنس: ${v.visaReference || "—"}\n🔐 کد دسترسی خصوصی: ${v.privatePin || "—"}\n💰 باقی‌مانده حساب: ${sym}${fmt(due)}`;
+    }
+
+    function personFolderName(v) {
+      const base = `${v.familyGroup || ""} ${v.firstName || ""} ${v.lastName || ""}`.trim();
+      return (base || "مشتری").replace(/[^\w\u0600-\u06FF_-]+/g, "_");
+    }
+
+    async function connectEDriveFolder() {
+      if (!window.showDirectoryPicker) {
+        notify("مرورگر شما از اتصال مستقیم پوشه پشتیبانی نمی‌کند؛ فایل‌ها با نام شخص دانلود می‌شوند تا در درایو E قرار دهید.");
+        return;
+      }
+      try {
+        const handle = await window.showDirectoryPicker({ mode: "readwrite" });
+        eDriveRootHandle = handle;
+        state.eDriveFolderLabel = `E:\\${handle.name}`;
+        addAudit(`اتصال پوشه درایو E (${handle.name})`);
+        saveState(); render();
+        notify(`پوشه «${handle.name}» متصل شد؛ فایل هر فرد/فامیل با نام خودش ذخیره می‌شود.`);
+      } catch (err) {
+        if (err && err.name !== "AbortError") notify("امکان اتصال به پوشه وجود نداشت.", true);
+      }
+    }
+
+    function dataUrlToBlob(dataUrl) {
+      const parts = dataUrl.split(",");
+      const mime = (parts[0].match(/:(.*?);/) || [])[1] || "image/jpeg";
+      const bin = atob(parts[1] || "");
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      return new Blob([arr], { type: mime });
+    }
+
+    async function savePersonFilesToEDriveAndDownload(id) {
+      const v = state.visas.find(x => x.id === id); if (!v) return;
+      const folderName = personFolderName(v);
+      const summary = [
+        `شرکت: ${state.office.name}`,
+        `نام و نام خانوادگی: ${v.firstName} ${v.lastName}`,
+        `کد فامیل / گروه: ${v.familyGroup || "فردی"} | رمز خصوصی: ${v.privatePin || "—"}`,
+        `نام پدر: ${v.fatherName || "—"} | مادر: ${v.motherName || "—"} | خانم: ${v.spouseName || "—"}`,
+        `شماره پاسپورت: ${v.passport || "—"} | ریفرنس: ${v.visaReference || "—"}`,
+        `کشور: ${v.country} | وضعیت: ${statusLabel(v.status)}`,
+        `آرشیو: بخش (${v.section || "—"}) - دوسیه (${v.dossier || "—"}) - قفس (${v.shelf || "—"}) - تاریخ (${v.shamsiDate || v.date})`,
+        `مالی: کل ${currSym(v.currency)}${fmt(v.total)} | رسید ${currSym(v.currency)}${fmt(v.paid)}`
+      ].join("\n");
+
+      let savedDirectly = false;
+      if (eDriveRootHandle) {
+        try {
+          const subDir = await eDriveRootHandle.getDirectoryHandle(folderName, { create: true });
+          const f1 = await subDir.getFileHandle(`${folderName}_مشخصات.txt`, { create: true });
+          const w1 = await f1.createWritable();
+          await w1.write("\uFEFF" + summary);
+          await w1.close();
+
+          if (v.photo) {
+            const f2 = await subDir.getFileHandle(`${folderName}_پاسپورت.jpg`, { create: true });
+            const w2 = await f2.createWritable();
+            await w2.write(dataUrlToBlob(v.photo));
+            await w2.close();
+          }
+          if (v.tazkira) {
+            const f3 = await subDir.getFileHandle(`${folderName}_تذکره.jpg`, { create: true });
+            const w3 = await f3.createWritable();
+            await w3.write(dataUrlToBlob(v.tazkira));
+            await w3.close();
+          }
+          savedDirectly = true;
+        } catch (err) {
+          savedDirectly = false;
+        }
+      }
+
+      const txtBlob = new Blob(["\uFEFF", summary], { type: "text/plain;charset=utf-8;" });
+      const a1 = document.createElement("a");
+      a1.href = URL.createObjectURL(txtBlob);
+      a1.download = `${folderName}_مشخصات.txt`;
+      a1.click();
+
+      if (v.photo) {
+        const a2 = document.createElement("a");
+        a2.href = v.photo;
+        a2.download = `${folderName}_پاسپورت.jpg`;
+        a2.click();
+      }
+      if (v.tazkira) {
+        const a3 = document.createElement("a");
+        a3.href = v.tazkira;
+        a3.download = `${folderName}_تذکره.jpg`;
+        a3.click();
+      }
+
+      addAudit(`ذخیره فایل‌های ${folderName} (${savedDirectly ? "مستقیم در پوشه درایو E" : "دانلود به نام شخص"})`);
+      saveState();
+      notify(savedDirectly
+        ? `فایل‌ها در پوشه «${folderName}» داخل درایو E ذخیره شدند.`
+        : `فایل‌های «${folderName}» با نام خود فرد/فامیل آماده ذخیره در درایو E هستند.`);
+    }
+
+    /* پرونده و دسترسی خصوصی فقط برای همان فرد یا فامیل */
+    function openPrivateClientPortal(id) {
+      const v = state.visas.find(x => x.id === id); if (!v) return;
+      const pin = v.privatePin || v.passport || "1234";
+      const sym = currSym(v.currency || "AFN");
+      const due = Math.max(0, Number(v.total||0) - Number(v.paid||0));
+      const familyMembers = v.familyGroup
+        ? state.visas.filter(x => x.familyGroup && x.familyGroup.trim().toLowerCase() === v.familyGroup.trim().toLowerCase())
+        : [v];
+
+      const htmlContent = `<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>پرونده خصوصی ${esc(v.firstName)} ${esc(v.lastName)} — ${esc(state.office.name)}</title>
+  <style>
+    body{font-family:Tahoma,sans-serif;background:#f1f5f9;color:#0f172a;padding:18px;line-height:1.7;}
+    .gate{max-width:400px;margin:60px auto;background:#fff;padding:22px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);text-align:center;}
+    .box{max-width:820px;margin:0 auto;background:#fff;padding:22px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);display:none;}
+    input,button{padding:9px 12px;border-radius:8px;border:1px solid #cbd5e1;font-size:13px;}
+    button{background:#0f4c81;color:#fff;border:none;cursor:pointer;font-weight:bold;}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
+    .law{background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:10px;font-size:12px;white-space:pre-line;margin-top:12px;}
+    img.doc{max-width:240px;border-radius:8px;border:1px solid #cbd5e1;margin-top:8px;}
+  </style>
+</head>
+<body>
+  <div class="gate" id="gate">
+    <h3>🔐 دسترسی خصوصی مشتری / فامیل</h3>
+    <p style="font-size:12px;color:#64748b;">این فایل مخصوص <strong>${esc(v.firstName)} ${esc(v.lastName)}</strong>${v.familyGroup ? ` (فامیل: <strong>${esc(v.familyGroup)}</strong>)` : ""} است.</p>
+    <input type="password" id="pinInp" placeholder="رمز دسترسی خصوصی را وارد کنید..." style="width:100%;margin:10px 0;" />
+    <button onclick="checkPin()" style="width:100%;">مشاهده پرونده خصوصی</button>
+    <p id="err" style="color:#dc2626;font-size:12px;margin-top:8px;"></p>
+  </div>
+  <div class="box" id="portal">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:10px;">
+      <div><strong>${esc(state.office.name)}</strong><div style="font-size:12px;color:#64748b;">پرونده اختصاصی و امن فرد / فامیل</div></div>
+      <button onclick="window.print()">🖨 پرنت پرونده</button>
+    </div>
+    ${familyMembers.map(m => {
+      const mSym = currSym(m.currency || "AFN");
+      const mDue = Math.max(0, Number(m.total||0) - Number(m.paid||0));
+      return `<div style="border:1px solid #e2e8f0;border-radius:10px;padding:12px;margin-top:12px;">
+        <strong>👤 ${esc(m.firstName)} ${esc(m.lastName)}</strong> — وضعیت: <strong>${esc(statusLabel(m.status))}</strong>
+        <div class="grid">
+          <div><strong>شماره پاسپورت:</strong> ${esc(m.passport||"—")}</div>
+          <div><strong>ریفرنس:</strong> ${esc(m.visaReference||"—")}</div>
+          <div><strong>کشور:</strong> ${esc(m.country||"—")}</div>
+          <div><strong>باقی‌مانده حساب:</strong> ${mSym}${fmt(mDue)}</div>
+        </div>
+        ${m.photo ? `<div><strong>اسکن پاسپورت:</strong><br><img class="doc" src="${m.photo}" /></div>` : ""}
+        ${m.tazkira ? `<div><strong>اسکن تذکره:</strong><br><img class="doc" src="${m.tazkira}" /></div>` : ""}
+      </div>`;
+    }).join("")}
+    <div class="law">${esc(state.office.visaLawText || "")}\n\n${esc(state.office.companyLawText || "")}</div>
+  </div>
+  <script>
+    function checkPin(){
+      if(document.getElementById("pinInp").value === "${esc(pin)}"){
+        document.getElementById("gate").style.display="none";
+        document.getElementById("portal").style.display="block";
+      } else {
+        document.getElementById("err").textContent="رمز خصوصی نادرست است.";
+      }
+    }
+  <\/script>
+</body></html>`;
+
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Private_${personFolderName(v)}.html`;
+      a.click();
+      window.open(url, "_blank");
+      addAudit(`ایجاد پرونده خصوصی برای ${v.firstName} ${v.lastName} (رمز: ${pin})`);
+      saveState();
+      notify(`پرونده خصوصی ${v.firstName} ${v.lastName} با رمز «${pin}» ساخته شد.`);
     }
 
     function render() {
       syncLockScreen();
       syncChrome();
       const titles = {
-        visas: "ثبت یا ویرایش معلومات مشتری / ویزا و اسکن پاسپورت",
-        dashboard: "داشبورد جامع و اطلاعیه‌های ویزا",
+        visas: "ثبت یا ویرایش معلومات مشتری / ویزا، بایگانی و اسکن پاسپورت",
+        dashboard: "داشبورد و وضعیت ویزا (گرینتد/آمده یا ریجکت/رد شده)",
         tickets: "صدور تکت هواپیما و حساب پرواز",
         excel: "فایل اکسل متصل مشتریان",
         companies: "شرکت‌های ترانزیتی و سیاحتی (۴ اسعار)",
         debtors: "مقروضین دیگر (۴ اسعار)",
-        passports: "ثبت و تحویل پاسپورت",
-        customers: "قبض QR و پیام آماده واتساپ",
+        passports: "بایگانی و تحویل پاسپورت (بخش، دوسیه، قفس و تاریخ)",
+        customers: "قبض QR، دسترسی خصوصی فرد/فامیل و پیام واتساپ",
         exchange: "نرخ روز اسعار و معادل سرمایه کل",
-        gmails: "جیمیل‌های متصل ویزا و بکاپ",
-        docs: "نگهداری اسناد و فایل‌ها",
+        gmails: "جیمیل‌های متصل ثبت ویزا",
+        docs: "نگهداری اسناد، درایو E و پوشه شخصی مشتری",
         audit: "تاریخچه فعالیت کارمندان",
-        office: "تنظیمات لوگو، جیمیل بکاپ و رمزها",
+        office: "تنظیمات لوگو، جیمیل روزانه، قوانین و رمزها",
         expenses: "هزینه‌های دفتر",
         reports: "گزارش مالی جامع (۴ اسعار)"
       };
@@ -777,23 +983,29 @@
     function visaView() {
       const q = (searchFilter.visas || "").toLowerCase();
       const list = state.visas.filter(v =>
-        !q || `${v.firstName} ${v.lastName}`.toLowerCase().includes(q) ||
-        (v.passport || "").toLowerCase().includes(q) || (v.visaReference || "").toLowerCase().includes(q) || (v.phone || "").includes(q)
+        !q || `${v.firstName} ${v.lastName} ${v.familyGroup||""}`.toLowerCase().includes(q) ||
+        (v.passport || "").toLowerCase().includes(q) || (v.visaReference || "").toLowerCase().includes(q) ||
+        (v.phone || "").includes(q) || (v.dossier || "").toLowerCase().includes(q) || (v.shelf || "").toLowerCase().includes(q)
       );
       const td = todayISO();
 
       return `
+        <div class="drive-banner">
+          <div><strong>💾 مسیر ذخیره فایل‌ها در کامپیوتر:</strong> <span dir="ltr">${esc(state.eDriveFolderLabel || "E:\\Kandahar_Travel_Clients")}</span> — فایل هر فرد یا فامیل با نام خودش در پوشه اختصاصی ذخیره می‌شود.</div>
+          <button type="button" class="btn btn-success btn-sm" onclick="connectEDriveFolder()">اتصال پوشه در درایو E</button>
+        </div>
+
         <div class="card">
           <div class="card-head">
-            <h3 class="card-title" id="vFormHeading">ثبت یا ویرایش معلومات مشتری / ویزا و اسکن پاسپورت</h3>
-            <button type="button" class="btn btn-outline btn-sm" onclick="resetVisaForm()">فرم جدید</button>
+            <h3 class="card-title" id="vFormHeading">ثبت یا ویرایش معلومات مشتری / ویزا، بایگانی و اسکن پاسپورت</h3>
+            <button type="button" class="btn btn-outline btn-sm" onclick="if(checkUnfinishedBeforeLeave()) resetVisaForm()">فرم جدید</button>
           </div>
 
           <div class="scan-box">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
               <div>
                 <strong>📷 اسکن سریع پاسپورت افغانستانی (پر شدن خودکار فرم)</strong>
-                <div style="font-size:11.5px;color:var(--muted);">عکس واضح از صفحه اطلاعات و دو خط پایین (MRZ) پاسپورت بگیرید یا فایل انتخاب کنید تا نام و شماره پاسپورت در فرم وارد شوند.</div>
+                <div style="font-size:11.5px;color:var(--muted);">عکس واضح از صفحه اطلاعات و خط MRZ پاسپورت بگیرید تا نام، نام خانوادگی و شماره پاسپورت در فرم درج شوند.</div>
               </div>
               <label class="btn btn-primary btn-sm" style="margin:0;">
                 📷 اسکن / انتخاب عکس پاسپورت
@@ -807,6 +1019,8 @@
             <input type="hidden" id="vId" />
             <div class="field"><label>نام مشتری *</label><input type="text" id="vFirstName" required /></div>
             <div class="field"><label>نام خانوادگی *</label><input type="text" id="vLastName" required /></div>
+            <div class="field"><label>نام فامیل / گروه خانوادگی (اختیاری)</label><input type="text" id="vFamilyGroup" placeholder="مثلاً: فامیل مرادی" /></div>
+            <div class="field"><label>رمز دسترسی خصوصی فرد/فامیل</label><input type="text" id="vPrivatePin" placeholder="پیش‌فرض: شماره پاسپورت" /></div>
             <div class="field"><label>نام پدر</label><input type="text" id="vFatherName" /></div>
             <div class="field"><label>نام مادر</label><input type="text" id="vMotherName" /></div>
             <div class="field"><label>نام خانم (همسر)</label><input type="text" id="vSpouseName" /></div>
@@ -830,58 +1044,65 @@
               <option value="">-- انتخاب از جیمیل‌های ثبت‌شده --</option>
               ${state.gmails.map(g => `<option value="${esc(g.email)}">${esc(g.email)} (${esc(g.country)})</option>`).join("")}
             </select></div>
-            <div class="field"><label>آدرس جیمیل ویزا</label><input type="email" id="vGmail" placeholder="example@gmail.com" /></div>
+            <div class="field"><label>آدرس جیمیل ثبت ویزا</label><input type="email" id="vGmail" placeholder="example@gmail.com" /></div>
+            <div class="field"><label>بخش آرشیو دفتر</label><input type="text" id="vSection" placeholder="مثلاً: آرشیو ویزا" /></div>
+            <div class="field"><label>شماره دوسیه</label><input type="text" id="vDossier" placeholder="مثلاً: دوسیه ۱۲" /></div>
+            <div class="field"><label>شماره قفس</label><input type="text" id="vShelf" placeholder="مثلاً: قفس الف-۳" /></div>
             <div class="field"><label>تاریخ میلادی *</label><input type="date" id="vDate" required value="${td}" onchange="document.getElementById('vShamsiDate').value=toShamsi(this.value)" /></div>
             <div class="field"><label>تاریخ شمسی (خودکار)</label><input type="text" id="vShamsiDate" value="${toShamsi(td)}" /></div>
-            <div class="field"><label>وضعیت</label><select id="vStatus">
+            <div class="field"><label>وضعیت ویزا</label><select id="vStatus">
               <option value="Pending">در انتظار</option>
-              <option value="Arrived">ویزا آمده / صادر شده</option>
-              <option value="Rejected">ویزا رد شده</option>
+              <option value="Arrived">ویزا گرینتد / آمده</option>
+              <option value="Rejected">ویزا ریجکت / رد شده</option>
               <option value="Delivered">تحویل داده شده</option>
             </select></div>
             <div class="field"><label>واحد پول (ارز)</label><select id="vCurrency">${currOpts("AFN")}</select></div>
             <div class="field"><label>مبلغ کل بیل</label><input type="number" id="vTotal" min="0" step="0.01" value="0" /></div>
             <div class="field"><label>مبلغ دریافت‌شده (بیل)</label><input type="number" id="vPaid" min="0" step="0.01" value="0" /></div>
-            <div class="field"><label>عکس پروفایل مشتری / پاسپورت</label><input type="file" accept="image/*" onchange="pickImage(event,'vPhoto','vPhotoPrev',false)" /><input type="hidden" id="vPhoto" /></div>
-            <div class="field" style="grid-column:1/-1;"><label>یادداشت / توضیح رسید</label><textarea id="vNotes" rows="2">${esc(state.office.defaultReceiptNote || "")}</textarea></div>
-            <div class="field"><button type="submit" class="btn btn-primary">💾 ذخیره و آماده‌سازی رسید QR</button></div>
+            <div class="field"><label>اسکن پاسپورت / عکس مشتری</label><input type="file" accept="image/*" onchange="pickImage(event,'vPhoto','vPhotoPrev',false)" /><input type="hidden" id="vPhoto" /></div>
+            <div class="field"><label>اسکن تذکره / سند همراه</label><input type="file" accept="image/*,.pdf" onchange="pickTazkiraFile(event)" /><input type="hidden" id="vTazkira" /></div>
+            <div class="field" style="grid-column:1/-1;"><label>توضیحات این رسید / پرونده</label><textarea id="vNotes" rows="2">${esc(state.office.defaultReceiptNote || "")}</textarea></div>
+            <div class="field"><button type="submit" class="btn btn-primary">💾 ذخیره کامل، اکسل و پوشه فرد</button></div>
           </form>
-          <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;">
             <img id="vPhotoPrev" class="avatar avatar-lg" src="${fallbackAvatar("م")}" />
-            <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('vPhoto').value='';document.getElementById('vPhotoPrev').src=fallbackAvatar('م')">حذف عکس</button>
+            <span id="vTazkiraName" style="font-size:12px;color:var(--muted);">اسکن تذکره: ثبت نشده</span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('vPhoto').value='';document.getElementById('vPhotoPrev').src=fallbackAvatar('م');markUnsaved()">حذف عکس</button>
           </div>
         </div>
 
         <div class="card">
           <div class="card-head">
-            <h3 class="card-title">لیست مشتریان، ویزاها و رسیدهای دارای QR (${list.length})</h3>
+            <h3 class="card-title">لیست مشتریان، پوشه شخصی و رسیدهای QR (${list.length})</h3>
             <div class="actions">
-              <input type="text" placeholder="جستجو نام، پاسپورت، ریفرنس..." value="${esc(searchFilter.visas)}" oninput="searchFilter.visas=this.value;render()" style="width:220px;" />
+              <input type="text" placeholder="جستجو نام، فامیل، پاسپورت، دوسیه..." value="${esc(searchFilter.visas)}" oninput="searchFilter.visas=this.value;render()" style="width:230px;" />
               <button class="btn btn-success btn-sm" onclick="downloadExcelFile()">📗 دانلود اکسل</button>
+              <button class="btn btn-teal btn-sm" onclick="downloadDailyArchiveBundle()">🗂 بایگانی روزانه</button>
             </div>
           </div>
           <div class="table-wrap"><table><thead><tr>
-            <th>عکس</th><th>مشتری و تماس</th><th>پاسپورت و ریفرنس</th><th>کشور و جیمیل</th><th>مالی (کل / رسید / باقی)</th><th>وضعیت</th><th>عملیات و قبض QR</th>
+            <th>عکس</th><th>مشتری و فامیل</th><th>پاسپورت و ریفرنس</th><th>آرشیو (بخش/دوسیه/قفس)</th><th>مالی (کل / رسید / باقی)</th><th>وضعیت ویزا</th><th>عملیات، پوشه E و خصوصی</th>
           </tr></thead><tbody>
             ${list.length ? list.map(v => {
               const sym = currSym(v.currency || "AFN");
               const due = Math.max(0, Number(v.total||0) - Number(v.paid||0));
-              const badge = v.status === "Arrived" ? `<span class="badge b-arrived">✅ ویزا آمده</span>`
-                          : v.status === "Rejected" ? `<span class="badge b-rejected">❌ رد شده</span>`
+              const badge = v.status === "Arrived" ? `<span class="badge b-arrived">✅ گرینتد / آمده</span>`
+                          : v.status === "Rejected" ? `<span class="badge b-rejected">❌ ریجکت / رد شده</span>`
                           : v.status === "Delivered" ? `<span class="badge b-paid">تحویل شده</span>`
                           : `<span class="badge b-pending">در انتظار</span>`;
               return `<tr>
                 <td><img class="avatar" src="${v.photo || fallbackAvatar(v.firstName)}" /></td>
-                <td><strong>${esc(v.firstName)} ${esc(v.lastName)}</strong><br><span style="font-size:11px;color:var(--muted);">پدر: ${esc(v.fatherName||"—")} | ${esc(v.phone||"—")}</span></td>
+                <td><strong>${esc(v.firstName)} ${esc(v.lastName)}</strong><br><span style="font-size:11px;color:var(--muted);">${v.familyGroup ? `فامیل: ${esc(v.familyGroup)} | ` : ""}${esc(v.phone||"—")}</span></td>
                 <td><strong>${esc(v.passport||"—")}</strong><br><span style="font-size:11px;color:var(--muted);">ریفرنس: ${esc(v.visaReference||"—")}</span></td>
-                <td>${esc(v.country)}<br><span style="font-size:11px;color:var(--muted);" dir="ltr">${esc(v.gmail||"—")}</span></td>
+                <td><span style="font-size:11.5px;">بخش: ${esc(v.section||"—")}<br>دوسیه: <strong>${esc(v.dossier||"—")}</strong> | قفس: <strong>${esc(v.shelf||"—")}</strong></span></td>
                 <td>کل: ${sym}${fmt(v.total)} | رسید: ${sym}${fmt(v.paid)}<br>باقی: <strong style="color:${due>0?"var(--danger)":"var(--success)"}">${sym}${fmt(due)}</strong></td>
                 <td>${badge}</td>
                 <td><div class="actions">
                   ${v.phone ? `<a class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener" href="${waLink(v.phone, buildWaMessage(v))}">واتساپ</a>` : ""}
-                  <button class="btn btn-outline btn-sm" onclick="editVisa('${v.id}')">ویرایش</button>
+                  <button class="btn btn-outline btn-sm" onclick="if(checkUnfinishedBeforeLeave()) editVisa('${v.id}')">ویرایش</button>
                   <button class="btn btn-success btn-sm" onclick="printReceipt('${v.id}', false)">🖨 قبض QR</button>
-                  <button class="btn btn-teal btn-sm" onclick="printReceipt('${v.id}', true)">🖨 کامل</button>
+                  <button class="btn btn-teal btn-sm" onclick="savePersonFilesToEDriveAndDownload('${v.id}')">📁 پوشه درایو E</button>
+                  <button class="btn btn-primary btn-sm" onclick="openPrivateClientPortal('${v.id}')">🔐 پرونده خصوصی</button>
                   <button class="btn btn-danger btn-sm" onclick="delVisa('${v.id}')">حذف</button>
                 </div></td>
               </tr>`;
@@ -891,15 +1112,36 @@
       `;
     }
 
+    function pickTazkiraFile(ev) {
+      const f = ev.target.files[0]; if (!f) return;
+      const r = new FileReader();
+      r.onload = e => {
+        document.getElementById("vTazkira").value = e.target.result;
+        document.getElementById("vTazkiraName").textContent = `اسکن تذکره: ${f.name}`;
+        markUnsaved();
+        notify("اسکن تذکره آماده ذخیره شد.");
+      };
+      r.readAsDataURL(f);
+    }
+
     function saveVisa(e) {
       e.preventDefault();
       const id = document.getElementById("vId").value;
       const firstName = document.getElementById("vFirstName").value.trim();
       const lastName = document.getElementById("vLastName").value.trim();
+      const familyGroup = document.getElementById("vFamilyGroup").value.trim();
       const gmail = document.getElementById("vGmail").value.trim();
       const country = document.getElementById("vCountry").value;
       const gDate = document.getElementById("vDate").value;
       const sDate = document.getElementById("vShamsiDate").value.trim() || toShamsi(gDate);
+      const passportNum = document.getElementById("vPassport").value.trim();
+      const privatePin = document.getElementById("vPrivatePin").value.trim() || passportNum || "1234";
+      const section = document.getElementById("vSection").value.trim();
+      const dossier = document.getElementById("vDossier").value.trim();
+      const shelf = document.getElementById("vShelf").value.trim();
+      const status = document.getElementById("vStatus").value;
+      const photo = document.getElementById("vPhoto").value;
+      const tazkira = document.getElementById("vTazkira").value;
 
       if (gmail && !state.gmails.some(g => g.email.toLowerCase() === gmail.toLowerCase())) {
         state.gmails.unshift({ id: "G-" + Date.now(), email: gmail, country, lastFeed: `مشتری: ${firstName} ${lastName}` });
@@ -907,35 +1149,62 @@
 
       const rec = {
         id: id || ("V-" + Date.now()),
-        firstName, lastName,
+        firstName, lastName, familyGroup, privatePin,
         fatherName: document.getElementById("vFatherName").value.trim(),
         motherName: document.getElementById("vMotherName").value.trim(),
         spouseName: document.getElementById("vSpouseName").value.trim(),
         passportType: document.getElementById("vPassportType").value,
         persons: parseInt(document.getElementById("vPersons").value || 1, 10) || 1,
-        passport: document.getElementById("vPassport").value.trim(),
+        passport: passportNum,
         visaReference: document.getElementById("vRefNum").value.trim(),
         phone: cleanNum(document.getElementById("vPhone").value),
-        country, gmail,
-        status: document.getElementById("vStatus").value,
+        country, gmail, section, dossier, shelf,
+        status,
         date: gDate, shamsiDate: sDate,
         currency: document.getElementById("vCurrency").value || "AFN",
         total: parseFloat(document.getElementById("vTotal").value || 0),
         paid: parseFloat(document.getElementById("vPaid").value || 0),
-        photo: document.getElementById("vPhoto").value,
+        photo, tazkira,
         notes: document.getElementById("vNotes").value.trim()
       };
 
       if (id) {
         const idx = state.visas.findIndex(x => x.id === id);
         if (idx !== -1) state.visas[idx] = rec;
-        addAudit(`ویرایش پرونده ${firstName} ${lastName}`);
+        addAudit(`ویرایش پرونده ${firstName} ${lastName} (${statusLabel(status)})`);
       } else {
         state.visas.unshift(rec);
         addAudit(`ثبت مشتری جدید: ${firstName} ${lastName}`);
       }
-      saveState(); resetVisaForm(); render();
-      notify("اطلاعات مشتری ذخیره و در فایل اکسل ثبت شد.");
+
+      const existingPass = state.passports.find(p => p.caseId === rec.id || (passportNum && p.number === passportNum));
+      const passObj = {
+        id: existingPass ? existingPass.id : ("P-" + Date.now()),
+        caseId: rec.id,
+        owner: `${firstName} ${lastName}`,
+        number: passportNum,
+        phone: rec.phone,
+        section: section || "آرشیو ویزا",
+        dossier: dossier || "—",
+        shelf: shelf || "—",
+        inDate: gDate,
+        shamsiDate: sDate,
+        state: status === "Delivered" ? "Returned" : "Held"
+      };
+      if (existingPass) Object.assign(existingPass, passObj);
+      else state.passports.unshift(passObj);
+
+      if (photo && !state.docs.some(d => d.caseId === rec.id && d.kind === "passport")) {
+        state.docs.unshift({ id: "DOC-P-" + Date.now(), caseId: rec.id, kind: "passport", title: `اسکن پاسپورت ${firstName} ${lastName}`, name: `${personFolderName(rec)}_Passport.jpg`, data: photo, date: gDate });
+      }
+      if (tazkira && !state.docs.some(d => d.caseId === rec.id && d.kind === "tazkira")) {
+        state.docs.unshift({ id: "DOC-T-" + Date.now(), caseId: rec.id, kind: "tazkira", title: `اسکن تذکره ${firstName} ${lastName}`, name: `${personFolderName(rec)}_Tazkira.jpg`, data: tazkira, date: gDate });
+      }
+
+      saveState();
+      savePersonFilesToEDriveAndDownload(rec.id);
+      resetVisaForm(); render();
+      notify("اطلاعات، اکسل و فایل‌های شخص ذخیره شدند.");
     }
 
     function editVisa(id) {
@@ -943,6 +1212,8 @@
       document.getElementById("vId").value = v.id;
       document.getElementById("vFirstName").value = v.firstName || "";
       document.getElementById("vLastName").value = v.lastName || "";
+      document.getElementById("vFamilyGroup").value = v.familyGroup || "";
+      document.getElementById("vPrivatePin").value = v.privatePin || "";
       document.getElementById("vFatherName").value = v.fatherName || "";
       document.getElementById("vMotherName").value = v.motherName || "";
       document.getElementById("vSpouseName").value = v.spouseName || "";
@@ -953,6 +1224,9 @@
       document.getElementById("vPhone").value = v.phone || "";
       document.getElementById("vCountry").value = v.country || "پاکستان";
       document.getElementById("vGmail").value = v.gmail || "";
+      document.getElementById("vSection").value = v.section || "";
+      document.getElementById("vDossier").value = v.dossier || "";
+      document.getElementById("vShelf").value = v.shelf || "";
       document.getElementById("vDate").value = v.date || todayISO();
       document.getElementById("vShamsiDate").value = v.shamsiDate || toShamsi(v.date);
       document.getElementById("vStatus").value = v.status || "Pending";
@@ -961,7 +1235,10 @@
       document.getElementById("vPaid").value = v.paid || 0;
       document.getElementById("vPhoto").value = v.photo || "";
       document.getElementById("vPhotoPrev").src = v.photo || fallbackAvatar(v.firstName);
+      document.getElementById("vTazkira").value = v.tazkira || "";
+      document.getElementById("vTazkiraName").textContent = v.tazkira ? "اسکن تذکره: ثبت شده" : "اسکن تذکره: ثبت نشده";
       document.getElementById("vNotes").value = v.notes || "";
+      hasUnsaved = false;
       document.getElementById("vFormHeading").textContent = `ویرایش مشتری: ${v.firstName} ${v.lastName}`;
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -975,17 +1252,37 @@
       document.getElementById("vShamsiDate").value = toShamsi(td);
       document.getElementById("vPhoto").value = "";
       document.getElementById("vPhotoPrev").src = fallbackAvatar("م");
+      document.getElementById("vTazkira").value = "";
+      document.getElementById("vTazkiraName").textContent = "اسکن تذکره: ثبت نشده";
       document.getElementById("vNotes").value = state.office.defaultReceiptNote || "";
       const st = document.getElementById("passportScanStatus");
       if (st) st.textContent = "آماده اسکن پاسپورت...";
-      document.getElementById("vFormHeading").textContent = "ثبت یا ویرایش معلومات مشتری / ویزا و اسکن پاسپورت";
+      hasUnsaved = false;
+      document.getElementById("vFormHeading").textContent = "ثبت یا ویرایش معلومات مشتری / ویزا، بایگانی و اسکن پاسپورت";
     }
 
     function delVisa(id) {
       if (!confirm("این مشتری حذف شود؟")) return;
       state.visas = state.visas.filter(x => x.id !== id);
+      state.passports = state.passports.filter(p => p.caseId !== id);
       addAudit("حذف یک پرونده مشتری");
       saveState(); render(); notify("حذف شد.");
+    }
+
+    function downloadDailyArchiveBundle() {
+      const td = todayISO();
+      const sh = toShamsi(td);
+      const todayRows = state.visas.filter(v => v.date === td);
+      const targetList = todayRows.length ? todayRows : state.visas;
+      const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body dir="rtl"><h3>بایگانی روزانه ${esc(state.office.name)} — تاریخ ${sh} (${td})</h3><table border="1"><thead><tr><th>اسم</th><th>فامیل</th><th>پاسپورت</th><th>ریفرنس</th><th>وضعیت</th><th>بخش</th><th>دوسیه</th><th>قفس</th><th>تاریخ شمسی</th></tr></thead><tbody>${targetList.map(v => `<tr><td>${esc(v.firstName)} ${esc(v.lastName)}</td><td>${esc(v.familyGroup||"")}</td><td>${esc(v.passport)}</td><td>${esc(v.visaReference||"")}</td><td>${esc(statusLabel(v.status))}</td><td>${esc(v.section||"")}</td><td>${esc(v.dossier||"")}</td><td>${esc(v.shelf||"")}</td><td>${esc(v.shamsiDate||toShamsi(v.date))}</td></tr>`).join("")}</tbody></table></body></html>`;
+      const blob = new Blob(["\uFEFF", html], { type: "application/vnd.ms-excel;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `Archive_Daily_${td}.xls`;
+      a.click();
+      addAudit(`خروجی بایگانی روزانه ${td}`);
+      saveState();
+      notify("فایل بایگانی روزانه برای ذخیره در آرشیو کامپیوتر دانلود شد.");
     }
 
     function printReceipt(id, full = false) {
@@ -999,24 +1296,26 @@
             <div>
               <strong>${esc(state.office.name)}</strong>
               <div style="font-size:11.5px;color:var(--muted);">شمسی: ${esc(v.shamsiDate || toShamsi(v.date))} | میلادی: ${esc(v.date)}</div>
-              <div style="font-size:11px;color:var(--primary);">اسکن QR = باز شدن پرونده در سیستم داخلی شرکت</div>
+              <div style="font-size:11px;color:var(--primary);">رمز دسترسی خصوصی فرد/فامیل: <strong>${esc(v.privatePin || v.passport || "—")}</strong></div>
             </div>
             <div class="qr-box">${generateQrSvg(v.id)}<span style="font-size:9px;">${esc(v.id)}</span></div>
           </div>
           <div class="receipt-grid">
             <div><strong>نام و خانوادگی:</strong> ${esc(v.firstName)} ${esc(v.lastName)}</div>
-            <div><strong>شماره تماس:</strong> ${esc(v.phone || "—")}</div>
+            <div><strong>فامیل / تماس:</strong> ${esc(v.familyGroup || "فردی")} | ${esc(v.phone || "—")}</div>
             ${full ? `<div><strong>نام پدر:</strong> ${esc(v.fatherName || "—")}</div><div><strong>نام مادر / خانم:</strong> ${esc(v.motherName || "—")} / ${esc(v.spouseName || "—")}</div>` : ""}
             <div><strong>شماره پاسپورت:</strong> ${esc(v.passport || "—")}</div>
             <div><strong>ریفرنس نمبر:</strong> ${esc(v.visaReference || "—")}</div>
-            <div><strong>کشور / نوع:</strong> ${esc(v.country)} (${esc(v.passportType)})</div>
+            <div><strong>کشور / وضعیت:</strong> ${esc(v.country)} (${esc(statusLabel(v.status))})</div>
+            <div><strong>آرشیو:</strong> بخش ${esc(v.section||"—")} | دوسیه ${esc(v.dossier||"—")} | قفس ${esc(v.shelf||"—")}</div>
             <div><strong>مبلغ کل / پرداختی:</strong> ${sym}${fmt(v.total)} / ${sym}${fmt(v.paid)}</div>
             <div><strong>باقی‌مانده:</strong> <strong>${sym}${fmt(due)}</strong></div>
           </div>
-          <div style="font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:7px;">${esc(v.notes || "")}</div>
+          <div style="font-size:12px;color:#0f172a;border-top:1px solid var(--border);padding-top:7px;"><strong>توضیحات رسید:</strong> ${esc(v.notes || "")}</div>
+          <div class="receipt-law">${esc(state.office.visaLawText || "")}\n\n${esc(state.office.companyLawText || "")}</div>
         </div></div>
         <div class="actions" style="justify-content:flex-end;margin-top:12px;">
-          <button class="btn btn-primary" onclick="window.print()">🖨 پرنت قبض با QR</button>
+          <button class="btn btn-primary" onclick="window.print()">🖨 پرنت قبض با QR و قوانین</button>
           <button class="btn btn-outline" onclick="closeModal()">بستن</button>
         </div>
       `;
@@ -1024,16 +1323,16 @@
     }
 
     function dashView() {
-      const arr = state.visas.filter(v => v.status === "Arrived");
-      const rej = state.visas.filter(v => v.status === "Rejected");
+      const granted = state.visas.filter(v => v.status === "Arrived");
+      const rejected = state.visas.filter(v => v.status === "Rejected");
       return `
-        ${arr.length ? `<div class="alert-box"><div><strong>✅ ویزاهای آماده‌شده (${arr.length}):</strong> ${arr.map(x => `${esc(x.firstName)} ${esc(x.lastName)}`).join(" | ")}</div><button class="btn btn-primary btn-sm" onclick="goTab('customers')">ارسال واتساپ</button></div>` : ""}
-        ${rej.length ? `<div class="reject-box"><div><strong>❌ ویزاهای ردشده (${rej.length}):</strong> ${rej.map(x => `${esc(x.firstName)} ${esc(x.lastName)}`).join(" | ")}</div></div>` : ""}
+        ${granted.length ? `<div class="alert-box"><div><strong>✅ ویزاهای گرینتد / آمده (${granted.length}):</strong> ${granted.map(x => `${esc(x.firstName)} ${esc(x.lastName)} (${esc(x.passport)})`).join(" | ")}</div><button class="btn btn-primary btn-sm" onclick="goTab('customers')">ارسال واتساپ</button></div>` : ""}
+        ${rejected.length ? `<div class="reject-box"><div><strong>❌ ویزاهای ریجکت / رد شده (${rejected.length}):</strong> ${rejected.map(x => `${esc(x.firstName)} ${esc(x.lastName)} (${esc(x.passport)})`).join(" | ")}</div></div>` : ""}
         <div class="kpis">
-          <div class="kpi"><div class="kpi-lbl">کل مشتریان و ویزاها</div><div class="kpi-val">${state.visas.length}</div></div>
-          <div class="kpi teal"><div class="kpi-lbl">تکت‌های هواپیمای صادرشده</div><div class="kpi-val">${state.tickets.length}</div></div>
-          <div class="kpi green"><div class="kpi-lbl">شرکت‌های ترانزیتی و سیاحتی</div><div class="kpi-val">${state.companies.length}</div></div>
-          <div class="kpi amber"><div class="kpi-lbl">پاسپورت‌های نزد دفتر</div><div class="kpi-val">${state.passports.filter(p => p.state !== "Returned").length}</div></div>
+          <div class="kpi"><div class="kpi-lbl">کل پرونده‌های ویزا</div><div class="kpi-val">${state.visas.length}</div></div>
+          <div class="kpi green"><div class="kpi-lbl">ویزا گرینتد / آمده</div><div class="kpi-val">${granted.length}</div></div>
+          <div class="kpi amber"><div class="kpi-lbl">ویزا ریجکت / رد شده</div><div class="kpi-val">${rejected.length}</div></div>
+          <div class="kpi teal"><div class="kpi-lbl">پاسپورت‌های بایگانی‌شده (نزد دفتر)</div><div class="kpi-val">${state.passports.filter(p => p.state !== "Returned").length}</div></div>
         </div>
       `;
     }
@@ -1100,20 +1399,21 @@
             <button class="btn btn-success btn-sm" onclick="downloadExcelFile()">⬇️ دانلود فایل اکسل (.xls)</button>
           </div>
           <div class="table-wrap"><table><thead><tr>
-            <th>#</th><th>اسم مکمل</th><th>تاریخ شمسی</th><th>تاریخ میلادی</th><th>شماره پاسپورت</th><th>شماره تلفن</th><th>ریفرنس نمبر</th>
+            <th>#</th><th>اسم مکمل</th><th>فامیل</th><th>تاریخ شمسی</th><th>تاریخ میلادی</th><th>شماره پاسپورت</th><th>شماره تلفن</th><th>ریفرنس نمبر</th><th>بخش / دوسیه / قفس</th>
           </tr></thead><tbody>
             ${state.visas.length ? state.visas.map((v, i) => `<tr>
-              <td>${i+1}</td><td><strong>${esc(v.firstName)} ${esc(v.lastName)}</strong></td>
+              <td>${i+1}</td><td><strong>${esc(v.firstName)} ${esc(v.lastName)}</strong></td><td>${esc(v.familyGroup||"—")}</td>
               <td>${esc(v.shamsiDate || toShamsi(v.date))}</td><td>${esc(v.date)}</td>
               <td>${esc(v.passport)}</td><td dir="ltr" style="text-align:right;">${esc(v.phone)}</td><td>${esc(v.visaReference||"—")}</td>
-            </tr>`).join("") : `<tr><td colspan="7" style="text-align:center;color:var(--muted);">موردی نیست.</td></tr>`}
+              <td>${esc(v.section||"—")} / ${esc(v.dossier||"—")} / ${esc(v.shelf||"—")}</td>
+            </tr>`).join("") : `<tr><td colspan="9" style="text-align:center;color:var(--muted);">موردی نیست.</td></tr>`}
           </tbody></table></div>
         </div>
       `;
     }
     function downloadExcelFile() {
-      const rows = state.visas.map((v, i) => `<tr><td>${i+1}</td><td>${esc(v.firstName)} ${esc(v.lastName)}</td><td>${esc(v.shamsiDate||toShamsi(v.date))}</td><td>${esc(v.date)}</td><td>${esc(v.passport)}</td><td>${esc(v.phone)}</td><td>${esc(v.visaReference||"")}</td></tr>`).join("");
-      const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body dir="rtl"><table border="1"><thead><tr><th>شماره</th><th>اسم</th><th>تاریخ شمسی</th><th>تاریخ میلادی</th><th>پاسپورت</th><th>تلفن</th><th>ریفرنس</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+      const rows = state.visas.map((v, i) => `<tr><td>${i+1}</td><td>${esc(v.firstName)} ${esc(v.lastName)}</td><td>${esc(v.familyGroup||"")}</td><td>${esc(v.shamsiDate||toShamsi(v.date))}</td><td>${esc(v.date)}</td><td>${esc(v.passport)}</td><td>${esc(v.phone)}</td><td>${esc(v.visaReference||"")}</td><td>${esc(v.section||"")} / ${esc(v.dossier||"")} / ${esc(v.shelf||"")}</td></tr>`).join("");
+      const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body dir="rtl"><table border="1"><thead><tr><th>شماره</th><th>اسم</th><th>فامیل</th><th>تاریخ شمسی</th><th>تاریخ میلادی</th><th>پاسپورت</th><th>تلفن</th><th>ریفرنس</th><th>بخش / دوسیه / قفس</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
       const blob = new Blob(["\uFEFF", html], { type: "application/vnd.ms-excel;charset=utf-8;" });
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "Kandahar_Travel_Customers.xls"; a.click();
     }
@@ -1200,48 +1500,67 @@
     }
 
     function passView() {
+      const q = (searchFilter.archive || "").toLowerCase();
+      const filtered = state.passports.filter(p =>
+        !q || (p.owner||"").toLowerCase().includes(q) || (p.number||"").toLowerCase().includes(q) ||
+        (p.section||"").toLowerCase().includes(q) || (p.dossier||"").toLowerCase().includes(q) || (p.shelf||"").toLowerCase().includes(q)
+      );
       return `
         <div class="card">
-          <div class="card-head"><h3 class="card-title">ثبت و تحویل پاسپورت</h3></div>
+          <div class="card-head"><h3 class="card-title">🗄️ ثبت و بایگانی پاسپورت در آرشیو دفتر</h3></div>
           <form class="grid-form" onsubmit="addPass(event)">
             <div class="field"><label>صاحب پاسپورت *</label><input name="owner" required /></div>
             <div class="field"><label>شماره پاسپورت *</label><input name="number" required /></div>
-            <div class="field"><label>تلفن</label><input name="phone" /></div>
-            <div class="field"><label>تاریخ دریافت</label><input type="date" name="inDate" value="${todayISO()}" /></div>
-            <div class="field"><button type="submit" class="btn btn-primary">ذخیره پاسپورت</button></div>
+            <div class="field"><label>بخش آرشیو</label><input name="section" placeholder="آرشیو ویزا" /></div>
+            <div class="field"><label>شماره دوسیه</label><input name="dossier" placeholder="دوسیه ۵" /></div>
+            <div class="field"><label>شماره قفس</label><input name="shelf" placeholder="قفس ب-۲" /></div>
+            <div class="field"><label>تاریخ بایگانی</label><input type="date" name="inDate" value="${todayISO()}" /></div>
+            <div class="field"><button type="submit" class="btn btn-primary">ذخیره در آرشیو</button></div>
           </form>
         </div>
-        <div class="card"><div class="table-wrap"><table><thead><tr><th>نام</th><th>شماره</th><th>تاریخ</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody>
-          ${state.passports.length ? state.passports.map(p => `<tr>
-            <td><strong>${esc(p.owner)}</strong></td><td>${esc(p.number)}</td><td>${esc(p.inDate)}</td>
-            <td><span class="badge ${p.state==="Returned"?"b-paid":"b-pending"}">${p.state==="Returned"?"تحویل داده شد":"نزد دفتر"}</span></td>
+        <div class="card">
+          <div class="card-head">
+            <h3 class="card-title">جستجوی سریع محل بایگانی پاسپورت‌ها (${filtered.length})</h3>
+            <input type="text" placeholder="جستجو نام، پاسپورت، دوسیه، قفس..." value="${esc(searchFilter.archive)}" oninput="searchFilter.archive=this.value;render()" style="width:230px;" />
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>نام</th><th>شماره پاسپورت</th><th>بخش / دوسیه / قفس</th><th>تاریخ</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody>
+          ${filtered.length ? filtered.map(p => `<tr>
+            <td><strong>${esc(p.owner)}</strong></td><td>${esc(p.number)}</td>
+            <td>بخش: ${esc(p.section||"—")} | دوسیه: <strong>${esc(p.dossier||"—")}</strong> | قفس: <strong>${esc(p.shelf||"—")}</strong></td>
+            <td>${esc(p.shamsiDate || toShamsi(p.inDate) || p.inDate)}</td>
+            <td><span class="badge ${p.state==="Returned"?"b-paid":"b-pending"}">${p.state==="Returned"?"تحویل داده شد":"بایگانی / نزد دفتر"}</span></td>
             <td><div class="actions">
-              ${p.state!=="Returned"?`<button class="btn btn-success btn-sm" onclick="const x=state.passports.find(i=>i.id==='${p.id}');if(x){x.state='Returned';saveState();render();}">تحویل دادن</button>`:""}
+              ${p.state!=="Returned"?`<button class="btn btn-success btn-sm" onclick="const x=state.passports.find(i=>i.id==='${p.id}');if(x){x.state='Returned';addAudit('تحویل پاسپورت '+x.owner);saveState();render();}">تحویل دادن</button>`:""}
               <button class="btn btn-danger btn-sm" onclick="state.passports=state.passports.filter(i=>i.id!=='${p.id}');saveState();render()">حذف</button>
             </div></td>
-          </tr>`).join("") : `<tr><td colspan="5" style="text-align:center;color:var(--muted);">موردی نیست.</td></tr>`}
+          </tr>`).join("") : `<tr><td colspan="6" style="text-align:center;color:var(--muted);">موردی یافت نشد.</td></tr>`}
         </tbody></table></div></div>
       `;
     }
     function addPass(e) {
       e.preventDefault(); const fd = new FormData(e.target);
-      state.passports.unshift({ id: "P-" + Date.now(), owner: fd.get("owner").trim(), number: fd.get("number").trim(), phone: cleanNum(fd.get("phone")), inDate: fd.get("inDate"), state: "Held" });
-      saveState(); render(); notify("پاسپورت ثبت شد.");
+      const dt = fd.get("inDate") || todayISO();
+      state.passports.unshift({
+        id: "P-" + Date.now(), owner: fd.get("owner").trim(), number: fd.get("number").trim(),
+        section: fd.get("section").trim(), dossier: fd.get("dossier").trim(), shelf: fd.get("shelf").trim(),
+        inDate: dt, shamsiDate: toShamsi(dt), state: "Held"
+      });
+      saveState(); render(); notify("پاسپورت در آرشیو ثبت شد.");
     }
 
     function custView() {
       return `
         <div class="card">
-          <div class="card-head"><h3 class="card-title">قبض QR و پیام آماده واتساپ مشتریان</h3></div>
-          <div class="table-wrap"><table><thead><tr><th>مشتری</th><th>شماره واتساپ</th><th>پاسپورت و ریفرنس</th><th>قبض و پیام</th></tr></thead><tbody>
+          <div class="card-head"><h3 class="card-title">قبض QR، دسترسی خصوصی فرد/فامیل و پیام واتساپ</h3></div>
+          <div class="table-wrap"><table><thead><tr><th>مشتری / فامیل</th><th>رمز خصوصی</th><th>وضعیت ویزا</th><th>عملیات</th></tr></thead><tbody>
             ${state.visas.length ? state.visas.map(v => `<tr>
-              <td><strong>${esc(v.firstName)} ${esc(v.lastName)}</strong></td>
-              <td dir="ltr" style="text-align:right;">${esc(v.phone||"—")}</td>
-              <td>${esc(v.passport||"—")} • ${esc(v.visaReference||"—")}</td>
+              <td><strong>${esc(v.firstName)} ${esc(v.lastName)}</strong> ${v.familyGroup ? `(${esc(v.familyGroup)})` : ""}</td>
+              <td><strong>${esc(v.privatePin || v.passport || "—")}</strong></td>
+              <td>${esc(statusLabel(v.status))}</td>
               <td><div class="actions">
-                ${v.phone ? `<a class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener" href="${waLink(v.phone, buildWaMessage(v))}">ارسال واتساپ</a>` : ""}
+                ${v.phone ? `<a class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener" href="${waLink(v.phone, buildWaMessage(v))}">واتساپ</a>` : ""}
+                <button class="btn btn-primary btn-sm" onclick="openPrivateClientPortal('${v.id}')">🔐 پرونده خصوصی</button>
                 <button class="btn btn-success btn-sm" onclick="printReceipt('${v.id}', false)">🖨 قبض QR</button>
-                <button class="btn btn-teal btn-sm" onclick="printReceipt('${v.id}', true)">🖨 قبض کامل</button>
               </div></td>
             </tr>`).join("") : `<tr><td colspan="4" style="text-align:center;color:var(--muted);">مشتری نیست.</td></tr>`}
           </tbody></table></div>
@@ -1267,8 +1586,8 @@
     function gmailView() {
       return `
         <div class="card">
-          <div class="card-head"><h3 class="card-title">📧 جیمیل‌های متصل ویزا (${state.gmails.length})</h3>
-          <button class="btn btn-gmail btn-sm" onclick="backupNowToCompanyGmail(false)">ارسال بکاپ به جیمیل شرکت</button></div>
+          <div class="card-head"><h3 class="card-title">📧 جیمیل‌های متصل ثبت ویزا (${state.gmails.length})</h3>
+          <button class="btn btn-gmail btn-sm" onclick="saveDailyToCompanyGmail()">ذخیره روزانه در جیمیل شرکت</button></div>
           <div class="table-wrap"><table><thead><tr><th>جیمیل</th><th>کشور</th><th>یادداشت</th><th>باز کردن</th></tr></thead><tbody>
             ${state.gmails.length ? state.gmails.map(g => `<tr>
               <td dir="ltr" style="text-align:right;"><strong>${esc(g.email)}</strong></td><td>${esc(g.country)}</td><td>${esc(g.lastFeed||"—")}</td>
@@ -1282,7 +1601,10 @@
     function docsView() {
       return `
         <div class="card">
-          <div class="card-head"><h3 class="card-title">📁 نگهداری اسناد و فایل‌ها</h3></div>
+          <div class="card-head">
+            <h3 class="card-title">📁 نگهداری اسناد، درایو E و پوشه شخصی</h3>
+            <button class="btn btn-teal btn-sm" onclick="connectEDriveFolder()">💾 اتصال پوشه درایو E</button>
+          </div>
           <form class="grid-form" onsubmit="addDoc(event)">
             <div class="field"><label>عنوان سند *</label><input name="title" required /></div>
             <div class="field"><label>فایل / تصویر *</label><input type="file" id="docInp" required /></div>
@@ -1299,7 +1621,7 @@
       const f = document.getElementById("docInp").files[0]; if (!f) return;
       const title = new FormData(e.target).get("title").trim();
       const r = new FileReader();
-      r.onload = ev => { state.docs.unshift({ title, name: f.name, data: ev.target.result }); saveState(); render(); notify("سند ذخیره شد."); };
+      r.onload = ev => { state.docs.unshift({ id: "DOC-" + Date.now(), title, name: f.name, data: ev.target.result, date: todayISO() }); saveState(); render(); notify("سند ذخیره شد."); };
       r.readAsDataURL(f);
     }
 
@@ -1316,9 +1638,9 @@
       const ok = state.presidentApproved && state.viceApproved;
       return `
         <div class="card">
-          <div class="card-head"><h3 class="card-title">⚙️ تنظیمات دفتر، لوگو، امنیت QR و کنترل رمزها</h3></div>
+          <div class="card-head"><h3 class="card-title">⚙️ تنظیمات لوگو، جیمیل روزانه، درایو E، قوانین و رمزها</h3></div>
           <div class="alert-box">
-            <div>تغییر رمز عبور نیازمند تایید همزمان <strong>رئیس</strong> و <strong>معاون</strong> است.</div>
+            <div>تغییر رمز ورود و رمز مالی فقط با تایید همزمان <strong>رئیس</strong> و <strong>معاون</strong> فعال می‌شود.</div>
             <div class="actions">
               <button type="button" class="btn ${state.presidentApproved?"btn-success":"btn-outline"} btn-sm" onclick="state.presidentApproved=!state.presidentApproved;saveState();render()">${state.presidentApproved?"✓ تایید رئیس":"تایید رئیس"}</button>
               <button type="button" class="btn ${state.viceApproved?"btn-success":"btn-outline"} btn-sm" onclick="state.viceApproved=!state.viceApproved;saveState();render()">${state.viceApproved?"✓ تایید معاون":"تایید معاون"}</button>
@@ -1326,30 +1648,35 @@
           </div>
           <form class="grid-form" onsubmit="saveOffice(event)">
             <div class="field"><label>نام شرکت *</label><input id="oName" required value="${esc(state.office.name)}" /></div>
-            <div class="field"><label>جیمیل بکاپ شرکت</label><input type="email" id="oGmail" value="${esc(state.companyBackupGmail)}" /></div>
-            <div class="field"><label>قفل امنیتی هنگام اسکن QR</label><select id="oQrLock">
-              <option value="true" ${state.lockOnQrScan!==false?"selected":""}>فعال (فقط با رمز شرکت باز شود)</option>
-              <option value="false" ${state.lockOnQrScan===false?"selected":""}>غیرفعال</option>
-            </select></div>
-            <div class="field"><label>رمز ورود (${ok?"قابل تغییر":"قفل"})</label><input id="oAppP" value="${esc(state.appPassword)}" ${ok?"":"readonly"} /></div>
-            <div class="field"><label>رمز بخش مالی (${ok?"قابل تغییر":"قفل"})</label><input id="oFinP" value="${esc(state.financePassword)}" ${ok?"":"readonly"} /></div>
+            <div class="field"><label>جیمیل مخصوص شرکت (ذخیره روزانه)</label><input type="email" id="oGmail" value="${esc(state.companyBackupGmail)}" placeholder="company@gmail.com" /></div>
+            <div class="field"><label>مسیر پوشه درایو E</label><input id="oDrive" value="${esc(state.eDriveFolderLabel || "E:\\Kandahar_Travel_Clients")}" /></div>
+            <div class="field"><label>رمز ورود (${ok?"قابل تغییر":"قفل — نیاز به تایید رئیس و معاون"})</label><input id="oAppP" value="${esc(state.appPassword)}" ${ok?"":"readonly"} /></div>
+            <div class="field"><label>رمز بخش مالی (${ok?"قابل تغییر":"قفل — نیاز به تایید رئیس و معاون"})</label><input id="oFinP" value="${esc(state.financePassword)}" ${ok?"":"readonly"} /></div>
             <div class="field"><label>آپلود لوگوی جدید</label><input type="file" accept="image/*" onchange="pickImage(event,'oLogoH','sidebarLogo',true)" /><input type="hidden" id="oLogoH" value="${esc(state.office.logo)}" /></div>
+            <div class="field" style="grid-column:1/-1;"><label>قانون اخذ ویزا (ثابت و قابل ویرایش برای درج در رسید)</label><textarea id="oVisaLaw" rows="2">${esc(state.office.visaLawText || "")}</textarea></div>
+            <div class="field" style="grid-column:1/-1;"><label>قانون شرکت در قبال مشتری (ثابت و قابل ویرایش برای درج در رسید)</label><textarea id="oCompLaw" rows="2">${esc(state.office.companyLawText || "")}</textarea></div>
             <div class="field"><button type="submit" class="btn btn-primary">ذخیره تنظیمات</button></div>
           </form>
         </div>
       `;
     }
+
     function saveOffice(e) {
       e.preventDefault();
       state.office.name = document.getElementById("oName").value.trim();
       state.companyBackupGmail = document.getElementById("oGmail").value.trim();
-      state.lockOnQrScan = document.getElementById("oQrLock").value === "true";
+      state.eDriveFolderLabel = document.getElementById("oDrive").value.trim() || "E:\\Kandahar_Travel_Clients";
+      state.office.visaLawText = document.getElementById("oVisaLaw").value.trim();
+      state.office.companyLawText = document.getElementById("oCompLaw").value.trim();
       if (state.presidentApproved && state.viceApproved) {
         state.appPassword = document.getElementById("oAppP").value.trim() || "123456";
         state.financePassword = document.getElementById("oFinP").value.trim() || "9999";
         state.presidentApproved = false; state.viceApproved = false;
+        notify("رمزها و تنظیمات با تایید رئیس و معاون ذخیره شدند.");
+      } else {
+        notify("تنظیمات شرکت، جیمیل و قوانین ذخیره شد.");
       }
-      saveState(); render(); notify("تنظیمات ذخیره شد.");
+      saveState(); render();
     }
 
     function expView() {
@@ -1366,6 +1693,7 @@
         </tbody></table></div></div>
       `;
     }
+
     function repView() {
       const lines = Object.values(CURRENCIES).map(c => {
         const inc = state.visas.filter(v => (v.currency||"AFN")===c.code).reduce((s,v)=>s+Number(v.paid||0),0);
@@ -1375,23 +1703,30 @@
       return `<div class="card"><div class="card-head"><h3 class="card-title">📈 گزارش مالی جامع به تفکیک ۴ اسعار</h3></div><ul style="padding-right:18px;line-height:2;">${lines}</ul></div>`;
     }
 
-    function backupNowToCompanyGmail() {
+    function saveDailyToCompanyGmail() {
+      state.lastDailyGmailSave = todayISO();
+      addAudit(`ثبت/ارسال بکاپ روزانه به جیمیل شرکت (${state.companyBackupGmail || "تنظیم نشده"})`);
+      saveState();
       downloadBackup();
       if (state.companyBackupGmail) {
-        window.open(`https://mail.google.com/mail/?authuser=${encodeURIComponent(state.companyBackupGmail)}&view=cm&fs=1&to=${encodeURIComponent(state.companyBackupGmail)}&su=${encodeURIComponent("بکاپ سیستم " + state.office.name)}`, "_blank");
+        window.open(`https://mail.google.com/mail/?authuser=${encodeURIComponent(state.companyBackupGmail)}&view=cm&fs=1&to=${encodeURIComponent(state.companyBackupGmail)}&su=${encodeURIComponent("بکاپ روزانه " + state.office.name + " - " + todayISO())}`, "_blank");
+      } else {
+        notify("فایل بکاپ دانلود شد؛ در بخش تنظیمات، جیمیل مخصوص شرکت را وارد کنید.");
       }
     }
+
     function downloadBackup() {
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `Kandahar_Travel_Backup_${todayISO()}.json`; a.click();
     }
+
     function restoreBackup(ev) {
       const f = ev.target.files[0]; if (!f) return;
       const r = new FileReader();
       r.onload = e => {
         try {
           const p = JSON.parse(e.target.result);
-          state = Object.assign(emptyData(), p);
+          state = Object.assign(emptyData(), p, { unlocked: true });
           saveState(); render(); notify("بکاپ بازیابی شد.");
         } catch (err) { notify("فایل بکاپ نامعتبر است.", true); }
       };
