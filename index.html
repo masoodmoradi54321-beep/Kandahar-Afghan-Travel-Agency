@@ -49,7 +49,7 @@
       border-radius: 8px; padding: 8px 10px; font-size: 12px; margin-bottom: 12px;
     }
 
-    .app { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+    .app { display: grid; grid-template-columns: 282px 1fr; min-height: 100vh; }
     .sidebar {
       background: linear-gradient(180deg, #08243e 0%, #0f3d66 100%);
       color: #e2e8f0; padding: 14px 12px; display: flex; flex-direction: column;
@@ -94,7 +94,7 @@
     .save-badge { font-size: 11px; padding: 3px 9px; border-radius: 999px; font-weight: 600; background: #dcfce7; color: #166534; }
     .save-badge.unsaved { background: #fee2e2; color: #991b1b; }
 
-    .content { padding: 14px; max-width: 1520px; width: 100%; margin: 0 auto; }
+    .content { padding: 14px; max-width: 1540px; width: 100%; margin: 0 auto; }
 
     .card {
       background: var(--card); border: 1px solid var(--border);
@@ -112,8 +112,17 @@
       padding: 10px 12px; margin-bottom: 10px;
       display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     }
-    .quick-search-bar input {
-      flex: 1; min-width: 230px; background: #fff; border-color: var(--primary);
+    .quick-search-bar input, .quick-search-bar select {
+      background: #fff; border-color: var(--primary);
+    }
+    .quick-search-bar input { flex: 1; min-width: 220px; }
+
+    .scan-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px; margin-top: 8px;
+    }
+    .scan-tile {
+      background: #fff; border: 1px solid #bae6fd; border-radius: 9px; padding: 10px;
     }
 
     .lookup-panel {
@@ -205,6 +214,7 @@
     .b-pending { background: #fef3c7; color: #92400e; }
     .b-paid { background: #dcfce7; color: #166534; }
     .b-urgent { background: #ffe4e6; color: #9f1239; }
+    .b-paused { background: #e2e8f0; color: #334155; }
     .actions { display: flex; flex-wrap: wrap; gap: 4px; }
 
     .modal-bg {
@@ -236,7 +246,7 @@
 
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
-      .sidebar { position: fixed; right: -285px; top: 0; bottom: 0; width: 280px; transition: right 0.2s ease; }
+      .sidebar { position: fixed; right: -285px; top: 0; bottom: 0; width: 282px; transition: right 0.2s ease; }
       .sidebar.open { right: 0; }
       .menu-btn { display: inline-flex; }
       .content { padding: 10px; }
@@ -254,17 +264,17 @@
     <div class="lock-card">
       <img id="lockLogo" src="icon.png" onerror="this.src=fallbackLogo()" style="width:72px;height:72px;border-radius:14px;object-fit:cover;margin-bottom:10px;border:2px solid var(--primary);" alt="لوگو" />
       <h2 style="font-size:17px;color:var(--primary-dark);" id="lockCompany">کندهار افغان سیاحتی شرکت</h2>
-      <p style="font-size:12px;color:var(--muted);margin:5px 0 10px;">دسترسی انحصاری پرسنل شرکت</p>
+      <p style="font-size:12px;color:var(--muted);margin:5px 0 10px;">ورود اختصاصی کارمندان با رمز شخصی</p>
       <div class="qr-target-banner" id="qrTargetBanner" style="display:none;"></div>
       <div class="field" style="text-align:right;margin-bottom:10px;">
-        <label>انتخاب حساب کارمند / میز کاری</label>
+        <label>انتخاب حساب کارمند</label>
         <select id="lockUserSelect"></select>
       </div>
       <div class="field" style="text-align:right;margin-bottom:12px;">
-        <label>رمز ورود به سیستم شرکت</label>
+        <label>رمز عبور اختصاصی کارمند</label>
         <input type="password" id="appPassInput" placeholder="رمز عبور را وارد کنید..." onkeydown="if(event.key==='Enter') unlockApp()" />
       </div>
-      <button class="btn btn-primary" style="width:100%;" onclick="unlockApp()">🔐 ورود امن به سیستم شرکت</button>
+      <button class="btn btn-primary" style="width:100%;" onclick="unlockApp()">🔐 ورود به سیستم شرکت</button>
     </div>
   </div>
 
@@ -312,6 +322,9 @@
       </button>
 
       <div class="nav-group">مدیریت و تنظیمات</div>
+      <button class="nav-btn" data-tab="staff" onclick="goTab('staff')">
+        <span>👥 مدیریت کارمندان و رمزها</span><span class="nav-pill" id="pillStaff">0</span>
+      </button>
       <button class="nav-btn" data-tab="exchange" onclick="goTab('exchange')">
         <span>💱 نرخ اسعار و معادل سرمایه</span>
       </button>
@@ -339,6 +352,7 @@
       <div class="user-box">
         <div><strong>حساب فعال:</strong> <span id="curUserName" style="color:#fff;">حاجی محمد اسماعیل رفیقی</span></div>
         <div id="curUserRole" style="font-size:11px;color:#93c5fd;margin-top:2px;">رئیس شرکت</div>
+        <div id="curUserWorkState" style="font-size:11px;color:#86efac;margin-top:2px;">وضعیت کار: فعال</div>
         <button class="btn btn-outline btn-sm" style="width:100%;margin-top:7px;" onclick="lockApp()">🔒 قفل کردن برنامه</button>
       </div>
     </aside>
@@ -351,11 +365,11 @@
           <span class="save-badge" id="saveBadge">✓ ذخیره شد</span>
         </div>
         <div class="topbar-right">
-          <select id="userSwitch" style="width:auto;min-width:155px;" onchange="switchUser(this.value)"></select>
           <button class="btn btn-teal btn-sm" onclick="connectEDriveFolder()">💾 اتصال پوشه درایو E</button>
+          <button class="btn btn-success btn-sm" onclick="connectLiveExcelFile()">📗 اتصال اکسل زنده</button>
           <button class="btn btn-gmail btn-sm" onclick="saveDailyToCompanyGmail()">📧 ذخیره روزانه در جیمیل شرکت</button>
-          <button class="btn btn-success btn-sm" onclick="downloadBackup()">دانلود بکاپ</button>
-          <label class="btn btn-warning btn-sm" style="margin:0;">
+          <button class="btn btn-warning btn-sm" onclick="downloadBackup()">بکاپ</button>
+          <label class="btn btn-outline btn-sm" style="margin:0;">
             بازیابی
             <input type="file" accept=".json,application/json" style="display:none" onchange="restoreBackup(event)" />
           </label>
@@ -379,8 +393,8 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const DB_KEY = "KANDAHAR_AFGHAN_TRAVEL_UNIFIED_V15";
-    const IDB_NAME = "KandaharTravelPermanentDB_V15";
+    const DB_KEY = "KANDAHAR_AFGHAN_TRAVEL_UNIFIED_V16";
+    const IDB_NAME = "KandaharTravelPermanentDB_V16";
     const IDB_STORE = "state_store";
     const FINANCE_TABS = ["expenses", "reports"];
 
@@ -394,7 +408,12 @@
     let hasUnsaved = false;
     let pendingQrCaseId = "";
     let eDriveRootHandle = null;
-    let searchFilter = { lookup: "", visas: "", excel: "", tickets: "", debtors: "", archive: "", urgent: "" };
+    let liveExcelFileHandle = null;
+    let searchFilter = {
+      lookup: "", lookupMode: "all",
+      visas: "", visasMode: "all",
+      excel: "", tickets: "", debtors: "", archive: "", urgent: ""
+    };
 
     function currSym(c) { return (CURRENCIES[c] || CURRENCIES.AFN).symbol; }
     function currOpts(sel = "AFN") {
@@ -440,13 +459,13 @@
         unlocked: false,
         financeUnlocked: false,
         settingsUnlocked: false,
-        appPassword: "",
         financePassword: "",
         settingsPassword: "",
         presidentApproved: false,
         viceApproved: false,
         companyBackupGmail: "",
         eDriveFolderLabel: "E:\\Kandahar_Travel_Clients",
+        liveExcelLabel: "متصل نشده",
         lastDailyGmailSave: "",
         regCounter: 1,
         tab: "visas",
@@ -462,10 +481,10 @@
           companyLawText: "قانون شرکت در قبال مشتری: شرکت متعهد به پیگیری دقیق پرونده، حفظ امانت پاسپورت و اسناد و تحویل به‌موقع رسید و ویزا می‌باشد."
         },
         team: [
-          { id: "U-1", name: "حاجی محمد اسماعیل رفیقی", job: "رئیس شرکت" },
-          { id: "U-2", name: "مسعود مرادی", job: "معاون شرکت" },
-          { id: "U-3", name: "طارق احمدی", job: "کارمند اول" },
-          { id: "U-4", name: "منصور مرادی", job: "کارمند دوم" }
+          { id: "U-1", name: "حاجی محمد اسماعیل رفیقی", job: "رئیس شرکت", password: "", active: true, isAdmin: true },
+          { id: "U-2", name: "مسعود مرادی", job: "معاون شرکت", password: "", active: true, isAdmin: true },
+          { id: "U-3", name: "طارق احمدی", job: "کارمند اول", password: "", active: true, isAdmin: false },
+          { id: "U-4", name: "منصور مرادی", job: "کارمند دوم", password: "", active: true, isAdmin: false }
         ],
         visas: [],
         urgentVisas: [],
@@ -487,7 +506,7 @@
 
     function loadState() {
       try {
-        const raw = localStorage.getItem(DB_KEY) || localStorage.getItem("KANDAHAR_AFGHAN_TRAVEL_UNIFIED_V14") || localStorage.getItem("KANDAHAR_AFGHAN_TRAVEL_UNIFIED_V13") || localStorage.getItem("KANDAHAR_AFGHAN_TRAVEL_UNIFIED_V12");
+        const raw = localStorage.getItem(DB_KEY) || localStorage.getItem("KANDAHAR_AFGHAN_TRAVEL_UNIFIED_V15") || localStorage.getItem("KANDAHAR_AFGHAN_TRAVEL_UNIFIED_V14");
         if (raw) {
           const parsed = JSON.parse(raw);
           const base = emptyData();
@@ -518,6 +537,7 @@
       const b = document.getElementById("saveBadge");
       if (b) { b.className = "save-badge"; b.textContent = "✓ ذخیره شد"; }
       syncChrome();
+      syncLiveExcelFile(false);
     }
 
     function markUnsaved() {
@@ -548,10 +568,25 @@
     }
 
     function me() { return state.team.find(x => x.id === state.userId) || state.team[0]; }
+    function isAdminUser() {
+      const u = me();
+      return Boolean(u && (u.isAdmin || /رئیس|معاون/i.test(u.job || "")));
+    }
+    function canOperate() {
+      const u = me();
+      return Boolean(u && u.active !== false);
+    }
+    function checkWorkAllowed() {
+      if (canOperate()) return true;
+      notify("⛔ کار شما توسط رئیس یا معاون متوقف شده است؛ امکان ثبت یا تغییر ندارید.", true);
+      return false;
+    }
+
     function addAudit(txt) {
       const d = new Date();
       const ts = `${todayISO()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
-      state.auditLogs.unshift({ time: ts, user: `${me().name} (${me().job})`, action: txt });
+      const u = me();
+      state.auditLogs.unshift({ time: ts, user: `${u.name} (${u.job})`, action: txt });
       if (state.auditLogs.length > 200) state.auditLogs.length = 200;
     }
 
@@ -559,11 +594,6 @@
       const num = Number(state.regCounter || 1);
       state.regCounter = num + 1;
       return `KTA-REG-${String(num).padStart(4, "0")}`;
-    }
-
-    function switchUser(id) {
-      if (!checkUnfinishedBeforeLeave()) return;
-      state.userId = id; addAudit(`تغییر کاربر به ${me().name}`); saveState(); render();
     }
 
     function handleQrHash() {
@@ -594,18 +624,20 @@
     }
 
     function unlockApp() {
-      const chosenUser = document.getElementById("lockUserSelect")?.value;
-      if (chosenUser) state.userId = chosenUser;
+      const chosenUserId = document.getElementById("lockUserSelect")?.value || state.userId;
+      const emp = state.team.find(x => x.id === chosenUserId) || state.team[0];
       const entered = document.getElementById("appPassInput").value;
-      const valid = state.appPassword ? (entered === state.appPassword) : Boolean(entered);
-      if (valid) {
+      const hasEmpPass = Boolean(emp && emp.password);
+      const ok = hasEmpPass ? (entered === emp.password) : Boolean(entered);
+      if (ok) {
+        state.userId = emp.id;
         state.unlocked = true;
         document.getElementById("appPassInput").value = "";
-        addAudit("ورود با رمز به سیستم شرکت");
+        addAudit(`ورود ${emp.name} به سیستم شرکت${emp.active === false ? " (حساب متوقف)" : ""}`);
         saveState(); render();
         applyPendingQrCase();
       } else {
-        notify("رمز ورود اشتباه است یا خالی است!", true);
+        notify("رمز عبور اشتباه است یا وارد نشده است!", true);
       }
     }
 
@@ -658,7 +690,7 @@
         banner.style.display = "none";
       }
       document.getElementById("lockUserSelect").innerHTML = state.team.map(emp =>
-        `<option value="${emp.id}" ${emp.id === state.userId ? "selected" : ""}>${esc(emp.name)} (${esc(emp.job)})</option>`
+        `<option value="${emp.id}" ${emp.id === state.userId ? "selected" : ""}>${esc(emp.name)} (${esc(emp.job)})${emp.active === false ? " — متوقف" : ""}</option>`
       ).join("");
     }
 
@@ -676,6 +708,7 @@
       document.getElementById("pillComp").textContent = state.companies.length;
       document.getElementById("pillDebt").textContent = state.otherDebtors.length;
       document.getElementById("pillPass").textContent = state.passports.filter(p => p.state !== "Returned").length;
+      document.getElementById("pillStaff").textContent = state.team.length;
       document.getElementById("pillGmail").textContent = state.gmails.length;
       document.getElementById("pillDocs").textContent = state.docs.length;
       document.getElementById("pillCust").textContent = state.visas.length;
@@ -685,103 +718,202 @@
       const u = me();
       document.getElementById("curUserName").textContent = u.name;
       document.getElementById("curUserRole").textContent = u.job;
-      document.getElementById("userSwitch").innerHTML = state.team.map(emp =>
-        `<option value="${emp.id}" ${emp.id === u.id ? "selected" : ""}>${esc(emp.name)} (${esc(emp.job)})</option>`
-      ).join("");
+      const ws = document.getElementById("curUserWorkState");
+      if (ws) {
+        ws.textContent = u.active === false ? "وضعیت کار: متوقف توسط مدیریت" : "وضعیت کار: فعال";
+        ws.style.color = u.active === false ? "#fca5a5" : "#86efac";
+      }
       document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === state.tab));
     }
 
-    function pickImage(ev, hid, pid, isLogo = false) {
+    function compressDataUrl(dataUrl, cb) {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement("canvas");
+        let w = img.width, h = img.height, max = 420;
+        if (w > h && w > max) { h = h * max / w; w = max; }
+        else if (h >= w && h > max) { w = w * max / h; h = max; }
+        c.width = w; c.height = h;
+        c.getContext("2d").drawImage(img, 0, 0, w, h);
+        cb(c.toDataURL("image/jpeg", 0.85));
+      };
+      img.src = dataUrl;
+    }
+
+    function pickLogoImage(ev) {
+      if (!checkWorkAllowed()) return;
       const f = ev.target.files[0]; if (!f) return;
       const r = new FileReader();
       r.onload = e => {
-        const img = new Image();
-        img.onload = () => {
-          const c = document.createElement("canvas");
-          let w = img.width, h = img.height, max = 360;
-          if (w > h && w > max) { h = h * max / w; w = max; }
-          else if (h >= w && h > max) { w = w * max / h; h = max; }
-          c.width = w; c.height = h;
-          c.getContext("2d").drawImage(img, 0, 0, w, h);
-          const url = c.toDataURL("image/jpeg", 0.85);
-          document.getElementById(hid).value = url;
-          document.getElementById(pid).src = url;
-          markUnsaved();
-          if (isLogo) { state.office.logo = url; saveState(); notify("لوگو ذخیره شد."); }
-        };
-        img.src = e.target.result;
+        compressDataUrl(e.target.result, url => {
+          document.getElementById("oLogoH").value = url;
+          document.getElementById("sidebarLogo").src = url;
+          state.office.logo = url;
+          saveState();
+          notify("لوگو ذخیره شد.");
+        });
       };
       r.readAsDataURL(f);
     }
 
-    async function scanPassportFile(ev) {
-      const file = ev.target.files[0];
-      if (!file) return;
+    function currentFolderNameFromForm() {
+      const custom = document.getElementById("vCustomFolder")?.value.trim();
+      if (custom) return custom.replace(/[^\w\u0600-\u06FF_-]+/g, "_");
+      const fn = document.getElementById("vFirstName")?.value.trim() || "";
+      const ln = document.getElementById("vLastName")?.value.trim() || "";
+      const base = `${fn} ${ln}`.trim() || "مشتری";
+      return base.replace(/[^\w\u0600-\u06FF_-]+/g, "_");
+    }
+
+    function personFolderName(v) {
+      if (v && v.customFolder && v.customFolder.trim()) {
+        return v.customFolder.trim().replace(/[^\w\u0600-\u06FF_-]+/g, "_");
+      }
+      const base = `${v?.firstName || ""} ${v?.lastName || ""}`.trim() || "مشتری";
+      return base.replace(/[^\w\u0600-\u06FF_-]+/g, "_");
+    }
+
+    function dataUrlToBlob(dataUrl) {
+      const parts = dataUrl.split(",");
+      const mime = (parts[0].match(/:(.*?);/) || [])[1] || "image/jpeg";
+      const bin = atob(parts[1] || "");
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      return new Blob([arr], { type: mime });
+    }
+
+    async function writeFileIntoPersonalFolder(folderName, fileName, contentOrDataUrl, isDataUrl = false) {
+      if (!eDriveRootHandle) return false;
+      try {
+        const subDir = await eDriveRootHandle.getDirectoryHandle(folderName, { create: true });
+        const fh = await subDir.getFileHandle(fileName, { create: true });
+        const wr = await fh.createWritable();
+        await wr.write(isDataUrl ? dataUrlToBlob(contentOrDataUrl) : contentOrDataUrl);
+        await wr.close();
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    async function handleDirectScan(ev, kind) {
+      if (!checkWorkAllowed()) return;
+      const f = ev.target.files[0]; if (!f) return;
+      const folderName = currentFolderNameFromForm();
       const statusEl = document.getElementById("passportScanStatus");
-      statusEl.textContent = "⏳ در حال خواندن پاسپورت و انتقال اسکن به پوشه شخصی مشتری...";
 
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const imgUrl = reader.result;
-        document.getElementById("vPhoto").value = imgUrl;
-        document.getElementById("vPhotoPrev").src = imgUrl;
-        markUnsaved();
-
-        try {
-          if (window.Tesseract) {
-            const res = await Tesseract.recognize(imgUrl, "eng");
-            const rawText = (res?.data?.text || "").toUpperCase();
-            parseAfghanPassportText(rawText, statusEl);
-          } else {
-            statusEl.textContent = "✅ تصویر اسکن پاسپورت در پرونده قرار گرفت؛ مشخصات را بررسی یا وارد کنید.";
+      const r = new FileReader();
+      r.onload = async e => {
+        const rawUrl = e.target.result;
+        const processUrl = async (finalUrl) => {
+          markUnsaved();
+          if (kind === "photo") {
+            document.getElementById("vPhoto").value = finalUrl;
+            document.getElementById("vPhotoPrev").src = finalUrl;
+            await writeFileIntoPersonalFolder(folderName, `${folderName}_عکس.jpg`, finalUrl, true);
+            notify(`عکس در پرونده و پوشه «${folderName}» ذخیره شد.`);
+          } else if (kind === "passport") {
+            document.getElementById("vPhoto").value = finalUrl;
+            document.getElementById("vPhotoPrev").src = finalUrl;
+            if (statusEl) statusEl.textContent = "⏳ در حال خواندن مشخصات پاسپورت و ذخیره در پوشه شخصی...";
+            if (window.Tesseract && rawUrl.startsWith("data:image/")) {
+              try {
+                const res = await Tesseract.recognize(rawUrl, "eng");
+                parseAfghanPassportText((res?.data?.text || "").toUpperCase(), statusEl);
+              } catch (_) {}
+            }
+            const updatedFolder = currentFolderNameFromForm();
+            await writeFileIntoPersonalFolder(updatedFolder, `${updatedFolder}_پاسپورت.jpg`, finalUrl, true);
+            notify(`اسکن پاسپورت در پوشه «${updatedFolder}» انتقال یافت.`);
+          } else if (kind === "tazkira") {
+            document.getElementById("vTazkira").value = finalUrl;
+            document.getElementById("vTazkiraName").textContent = `اسکن تذکره: ${f.name}`;
+            await writeFileIntoPersonalFolder(folderName, `${folderName}_تذکره.jpg`, finalUrl, true);
+            notify(`اسکن تذکره در پوشه «${folderName}» ذخیره شد.`);
+          } else if (kind === "urgentDoc") {
+            document.getElementById("vUrgentDoc").value = finalUrl;
+            document.getElementById("vUrgentDocName").textContent = `سند ضروری: ${f.name}`;
+            await writeFileIntoPersonalFolder(folderName, `${folderName}_سند_ضروری.jpg`, finalUrl, true);
+            notify(`سند ضروری در پوشه «${folderName}» ذخیره شد.`);
           }
-        } catch (err) {
-          statusEl.textContent = "✅ تصویر اسکن پاسپورت در پرونده قرار گرفت؛ مشخصات را بررسی یا وارد کنید.";
-        }
+        };
 
-        const fn = document.getElementById("vFirstName")?.value.trim() || "";
-        const ln = document.getElementById("vLastName")?.value.trim() || "";
-        if (fn || ln) {
-          const folder = personFolderName({ firstName: fn, lastName: ln });
-          await writeScanIntoPersonalFolder(folder, `${folder}_پاسپورت.jpg`, imgUrl);
+        if (rawUrl.startsWith("data:image/")) {
+          compressDataUrl(rawUrl, processUrl);
+        } else {
+          processUrl(rawUrl);
         }
       };
-      reader.readAsDataURL(file);
+      r.readAsDataURL(f);
     }
 
     function parseAfghanPassportText(rawText, statusEl) {
       const lines = rawText.split(/\r?\n/).map(l => l.trim().replace(/\s+/g, ""));
       const mrzLines = lines.filter(l => l.includes("<") || /^[P|A|I][<A-Z0-9]{15,}$/.test(l));
-
-      let foundPassport = "";
-      let foundLastName = "";
-      let foundFirstName = "";
-
+      let foundPassport = "", foundLastName = "", foundFirstName = "";
       if (mrzLines.length >= 2) {
-        const line1 = mrzLines[0];
-        const line2 = mrzLines[1];
-        const namePart = line1.replace(/^P.?AFG/, "").replace(/^<+/, "");
+        const namePart = mrzLines[0].replace(/^P.?AFG/, "").replace(/^<+/, "");
         const parts = namePart.split("<<");
         if (parts[0]) foundLastName = parts[0].replace(/<+/g, " ").trim();
         if (parts[1]) foundFirstName = parts[1].replace(/<+/g, " ").trim();
-        const passMatch = line2.match(/^([A-Z0-9]{6,10})</);
+        const passMatch = mrzLines[1].match(/^([A-Z0-9]{6,10})</);
         if (passMatch && passMatch[1]) foundPassport = passMatch[1];
       }
-
       if (!foundPassport) {
         const pMatch = rawText.match(/\b([A-Z]{1,2}\d{6,8}|P\d{7,8})\b/);
         if (pMatch) foundPassport = pMatch[1];
       }
-
       if (foundFirstName) document.getElementById("vFirstName").value = foundFirstName;
       if (foundLastName) document.getElementById("vLastName").value = foundLastName;
       if (foundPassport) document.getElementById("vPassport").value = foundPassport;
+      if (statusEl) {
+        statusEl.textContent = (foundFirstName || foundLastName || foundPassport)
+          ? `✅ استخراج شد — نام: ${foundFirstName || "—"} | نام خانوادگی: ${foundLastName || "—"} | پاسپورت: ${foundPassport || "—"}`
+          : "✅ اسکن پاسپورت در پرونده قرار گرفت؛ مشخصات را بررسی یا تکمیل کنید.";
+      }
+    }
 
-      if (foundFirstName || foundLastName || foundPassport) {
-        statusEl.textContent = `✅ استخراج شد — نام: ${foundFirstName || "—"} | نام خانوادگی: ${foundLastName || "—"} | پاسپورت: ${foundPassport || "—"}`;
-        notify("مشخصات پاسپورت در فرم درج شد.");
-      } else {
-        statusEl.textContent = "✅ تصویر اسکن ثبت شد؛ نام و شماره پاسپورت را بررسی یا تکمیل کنید.";
+    async function importFilesFromComputerFolderForCurrentForm() {
+      if (!checkWorkAllowed()) return;
+      if (!window.showDirectoryPicker) {
+        notify("مرورگر شما انتخاب مستقیم پوشه را پشتیبانی نمی‌کند؛ از انتخاب فایل استفاده کنید.");
+        return;
+      }
+      try {
+        const dir = await window.showDirectoryPicker({ mode: "read" });
+        const folderName = currentFolderNameFromForm();
+        let targetDir = dir;
+        try { targetDir = await dir.getDirectoryHandle(folderName); } catch (_) {}
+
+        let count = 0;
+        for await (const [name, entry] of targetDir.entries()) {
+          if (entry.kind === "file") {
+            const file = await entry.getFile();
+            const url = await new Promise(res => {
+              const rd = new FileReader();
+              rd.onload = ev => res(ev.target.result);
+              rd.readAsDataURL(file);
+            });
+            const lower = name.toLowerCase();
+            if (lower.includes("passport") || lower.includes("پاسپورت")) {
+              document.getElementById("vPhoto").value = url;
+              document.getElementById("vPhotoPrev").src = url;
+            } else if (lower.includes("tazkira") || lower.includes("تذکره")) {
+              document.getElementById("vTazkira").value = url;
+              document.getElementById("vTazkiraName").textContent = `اسکن تذکره: ${name}`;
+            } else {
+              document.getElementById("vUrgentDoc").value = url;
+              document.getElementById("vUrgentDocName").textContent = `سند ضروری: ${name}`;
+            }
+            state.docs.unshift({ id: "DOC-" + Date.now() + "-" + count, title: `${folderName} — ${name}`, name, data: url, date: todayISO() });
+            count++;
+          }
+        }
+        markUnsaved();
+        saveState();
+        notify(count ? `${count} فایل از پوشه کامپیوتر به پرونده منتقل شد.` : "فایلی در پوشه انتخاب‌شده پیدا نشد.");
+      } catch (err) {
+        if (err && err.name !== "AbortError") notify("خطا در خواندن پوشه کامپیوتر.", true);
       }
     }
 
@@ -818,37 +950,9 @@
       return `سلام محترم ${v.firstName} ${v.lastName}\nوضعیت ویزا: ${statusLabel(v.status)}\n🏢 ${state.office.name}\n🔖 شماره ثبت شرکت: ${v.companyRegNo || "—"}\n🛂 پاسپورت: ${v.passport || "—"}\n🔖 ریفرنس: ${v.visaReference || "—"}\n💰 باقی‌مانده حساب: ${sym}${fmt(due)}`;
     }
 
-    function personFolderName(v) {
-      const base = `${v.firstName || ""} ${v.lastName || ""}`.trim();
-      return (base || "مشتری").replace(/[^\w\u0600-\u06FF_-]+/g, "_");
-    }
-
-    function dataUrlToBlob(dataUrl) {
-      const parts = dataUrl.split(",");
-      const mime = (parts[0].match(/:(.*?);/) || [])[1] || "image/jpeg";
-      const bin = atob(parts[1] || "");
-      const arr = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-      return new Blob([arr], { type: mime });
-    }
-
-    async function writeScanIntoPersonalFolder(folderName, fileName, dataUrl) {
-      if (!eDriveRootHandle) return false;
-      try {
-        const subDir = await eDriveRootHandle.getDirectoryHandle(folderName, { create: true });
-        const fh = await subDir.getFileHandle(fileName, { create: true });
-        const wr = await fh.createWritable();
-        await wr.write(dataUrlToBlob(dataUrl));
-        await wr.close();
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
-
     async function connectEDriveFolder() {
       if (!window.showDirectoryPicker) {
-        notify("مرورگر شما از اتصال مستقیم پوشه پشتیبانی نمی‌کند؛ فایل‌ها با نام شخص دانلود می‌شوند تا در درایو E قرار دهید.");
+        notify("مرورگر شما از اتصال مستقیم پوشه پشتیبانی نمی‌کند؛ فایل‌ها به نام شخص دانلود می‌شوند تا در درایو E قرار دهید.");
         return;
       }
       try {
@@ -857,10 +961,70 @@
         state.eDriveFolderLabel = `E:\\${handle.name}`;
         addAudit(`اتصال پوشه درایو E (${handle.name})`);
         saveState(); render();
-        notify(`پوشه «${handle.name}» متصل شد؛ پوشه شخصی هر نفر و اسکن‌ها با نام خودش ذخیره می‌شوند.`);
+        notify(`پوشه «${handle.name}» متصل شد.`);
       } catch (err) {
         if (err && err.name !== "AbortError") notify("امکان اتصال به پوشه وجود نداشت.", true);
       }
+    }
+
+    async function connectLiveExcelFile() {
+      if (!window.showSaveFilePicker) {
+        downloadExcelFile();
+        return;
+      }
+      try {
+        const fh = await window.showSaveFilePicker({
+          suggestedName: "Kandahar_Travel_Customers_Live.xls",
+          types: [{ description: "Excel File", accept: { "application/vnd.ms-excel": [".xls"] } }]
+        });
+        liveExcelFileHandle = fh;
+        state.liveExcelLabel = fh.name;
+        addAudit(`اتصال فایل اکسل زنده (${fh.name})`);
+        saveState();
+        await syncLiveExcelFile(true);
+        render();
+      } catch (err) {
+        if (err && err.name !== "AbortError") notify("امکان اتصال به فایل اکسل وجود نداشت.", true);
+      }
+    }
+
+    function buildExcelHtml() {
+      const rows = state.visas.map((v, i) => `<tr>
+        <td>${i+1}</td>
+        <td>${esc(v.firstName)} ${esc(v.lastName)}</td>
+        <td>${esc(v.companions||"")}</td>
+        <td>${esc(v.companyRegNo||"")}</td>
+        <td>${esc(v.shamsiDate||toShamsi(v.date))}</td>
+        <td>${esc(v.date)}</td>
+        <td>${esc(v.passport)}</td>
+        <td>${esc(v.phone)}</td>
+        <td>${esc(v.visaReference||"")}</td>
+        <td>${esc(v.country||"")}</td>
+        <td>${esc(statusLabel(v.status))}</td>
+        <td>${esc(v.section||"")} / ${esc(v.dossier||"")} / ${esc(v.shelf||"")}</td>
+      </tr>`).join("");
+      return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body dir="rtl"><table border="1"><thead><tr>
+        <th>ردیف ثبت</th><th>اسم کامل</th><th>همراهان / فامیل (به ترتیب ثبت)</th><th>شماره ثبت شرکت</th><th>تاریخ شمسی</th><th>تاریخ میلادی</th><th>شماره پاسپورت</th><th>شماره تلفن</th><th>ریفرنس</th><th>کشور</th><th>وضعیت ویزا</th><th>بخش / دوسیه / قفس</th>
+      </tr></thead><tbody>${rows}</tbody></table></body></html>`;
+    }
+
+    async function syncLiveExcelFile(showToast = false) {
+      if (!liveExcelFileHandle) return;
+      try {
+        const wr = await liveExcelFileHandle.createWritable();
+        await wr.write("\uFEFF" + buildExcelHtml());
+        await wr.close();
+        if (showToast) notify(`فایل اکسل «${state.liveExcelLabel}» همگام‌سازی شد.`);
+      } catch (_) {}
+    }
+
+    function downloadExcelFile() {
+      const blob = new Blob(["\uFEFF", buildExcelHtml()], { type: "application/vnd.ms-excel;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "Kandahar_Travel_Customers_Ordered.xls";
+      a.click();
+      notify("فایل اکسل مشتریان دانلود شد.");
     }
 
     async function savePersonFilesToEDriveAndDownload(id) {
@@ -870,8 +1034,8 @@
         `شرکت: ${state.office.name}`,
         `شماره ثبت اختصاصی شرکت: ${v.companyRegNo || "—"}`,
         `نام و نام خانوادگی: ${v.firstName} ${v.lastName}`,
-        `نام پدر: ${v.fatherName || "—"} | مادر: ${v.motherName || "—"} | همسر: ${v.spouseName || "—"}`,
         `همراهان / فامیل: ${v.companions || "—"}`,
+        `نام پدر: ${v.fatherName || "—"} | مادر: ${v.motherName || "—"} | همسر: ${v.spouseName || "—"}`,
         `شماره پاسپورت: ${v.passport || "—"} | ریفرنس: ${v.visaReference || "—"}`,
         `کشور: ${v.country} | وضعیت ویزا: ${statusLabel(v.status)}`,
         `آرشیو: بخش (${v.section || "—"}) - دوسیه (${v.dossier || "—"}) - قفس (${v.shelf || "—"}) - تاریخ (${v.shamsiDate || v.date})`,
@@ -881,19 +1045,10 @@
 
       let savedDirectly = false;
       if (eDriveRootHandle) {
-        try {
-          const subDir = await eDriveRootHandle.getDirectoryHandle(folderName, { create: true });
-          const f1 = await subDir.getFileHandle(`${folderName}_مشخصات.txt`, { create: true });
-          const w1 = await f1.createWritable();
-          await w1.write("\uFEFF" + summary);
-          await w1.close();
-
-          if (v.photo) await writeScanIntoPersonalFolder(folderName, `${folderName}_پاسپورت.jpg`, v.photo);
-          if (v.tazkira) await writeScanIntoPersonalFolder(folderName, `${folderName}_تذکره.jpg`, v.tazkira);
-          savedDirectly = true;
-        } catch (err) {
-          savedDirectly = false;
-        }
+        savedDirectly = await writeFileIntoPersonalFolder(folderName, `${folderName}_مشخصات.txt`, "\uFEFF" + summary, false);
+        if (v.photo) await writeFileIntoPersonalFolder(folderName, `${folderName}_پاسپورت.jpg`, v.photo, true);
+        if (v.tazkira) await writeFileIntoPersonalFolder(folderName, `${folderName}_تذکره.jpg`, v.tazkira, true);
+        if (v.urgentDoc) await writeFileIntoPersonalFolder(folderName, `${folderName}_سند_ضروری.jpg`, v.urgentDoc, true);
       }
 
       const txtBlob = new Blob(["\uFEFF", summary], { type: "text/plain;charset=utf-8;" });
@@ -902,32 +1057,21 @@
       a1.download = `${folderName}_مشخصات.txt`;
       a1.click();
 
-      if (v.photo) {
-        const a2 = document.createElement("a");
-        a2.href = v.photo;
-        a2.download = `${folderName}_پاسپورت.jpg`;
-        a2.click();
-      }
-      if (v.tazkira) {
-        const a3 = document.createElement("a");
-        a3.href = v.tazkira;
-        a3.download = `${folderName}_تذکره.jpg`;
-        a3.click();
-      }
+      if (v.photo) { const a2 = document.createElement("a"); a2.href = v.photo; a2.download = `${folderName}_پاسپورت.jpg`; a2.click(); }
+      if (v.tazkira) { const a3 = document.createElement("a"); a3.href = v.tazkira; a3.download = `${folderName}_تذکره.jpg`; a3.click(); }
+      if (v.urgentDoc) { const a4 = document.createElement("a"); a4.href = v.urgentDoc; a4.download = `${folderName}_سند_ضروری.jpg`; a4.click(); }
 
-      addAudit(`ذخیره پوشه شخصی و اسناد ${folderName} (${savedDirectly ? "مستقیم در درایو E" : "دانلود به نام شخص"})`);
+      addAudit(`ذخیره پوشه «${folderName}» و اسناد (${savedDirectly ? "مستقیم در درایو E" : "دانلود به نام شخص"})`);
       saveState();
-      notify(savedDirectly
-        ? `پوشه «${folderName}» و اسنادش در درایو E ذخیره شدند.`
-        : `فایل‌های «${folderName}» با نام خود شخص آماده ذخیره در درایو E هستند.`);
+      notify(savedDirectly ? `پوشه «${folderName}» و اسنادش در درایو E ذخیره شدند.` : `فایل‌های «${folderName}» با نام پوشه آماده ذخیره در درایو E هستند.`);
     }
 
     function render() {
       syncLockScreen();
       syncChrome();
       const titles = {
-        lookup: "جستجوی سریع مشتریان و دسترسی به فایل‌ها و وضعیت ویزا",
-        visas: "ثبت یا ویرایش معلومات مشتری / ویزا، شماره ثبت پاسپورت و اسکن",
+        lookup: "جستجوی سریع مشتریان (نام کامل، پاسپورت کامل یا تلفن کامل)",
+        visas: "ثبت یا ویرایش معلومات مشتری / ویزا، اسکن مستقیم و پوشه شخصی",
         urgent: "مدیریت و پیگیری ویزاهای عاجل",
         dashboard: "داشبورد و وضعیت ویزا (گرینتد/آمده یا ریجکت/رد شده)",
         tickets: "صدور تکت هواپیما و حساب پرواز",
@@ -936,6 +1080,7 @@
         debtors: "مقروضین دیگر (۴ اسعار)",
         passports: "بایگانی و تحویل پاسپورت (شماره ثبت، بخش، دوسیه، قفس و تاریخ)",
         customers: "قبض QR و پیام واتساپ",
+        staff: "مدیریت کارمندان، رمزهای اختصاصی و وضعیت فعالیت",
         exchange: "نرخ روز اسعار و معادل سرمایه کل",
         gmails: "جیمیل‌های متصل ثبت ویزا",
         docs: "نگهداری اسناد، درایو E و پوشه شخصی مشتری",
@@ -956,6 +1101,7 @@
       else if (state.tab === "debtors") v.innerHTML = debtorsView();
       else if (state.tab === "passports") v.innerHTML = passView();
       else if (state.tab === "customers") v.innerHTML = custView();
+      else if (state.tab === "staff") v.innerHTML = staffView();
       else if (state.tab === "exchange") v.innerHTML = exchangeView();
       else if (state.tab === "gmails") v.innerHTML = gmailView();
       else if (state.tab === "docs") v.innerHTML = docsView();
@@ -975,130 +1121,163 @@
       }
     }
 
-    function matchesCustomerQuery(v, q) {
+    function matchesExactCustomerQuery(v, rawQ, mode = "all") {
+      const q = (rawQ || "").trim().toLowerCase();
       if (!q) return true;
-      const fullName = `${v.firstName || ""} ${v.lastName || ""}`.toLowerCase();
+      const fullName = `${v.firstName || ""} ${v.lastName || ""}`.trim().toLowerCase();
+      const passNum = (v.passport || "").trim().toLowerCase();
+      const phoneClean = cleanNum(rawQ);
+      const vPhoneClean = cleanNum(v.phone || "");
+
+      if (mode === "name") return fullName === q;
+      if (mode === "passport") return passNum !== "" && passNum === q;
+      if (mode === "phone") return phoneClean !== "" && vPhoneClean === phoneClean;
+
       return (
-        fullName.includes(q) ||
-        (v.companions || "").toLowerCase().includes(q) ||
-        (v.passport || "").toLowerCase().includes(q) ||
-        (v.companyRegNo || "").toLowerCase().includes(q) ||
-        (v.visaReference || "").toLowerCase().includes(q) ||
-        (v.phone || "").toLowerCase().includes(q) ||
-        (v.dossier || "").toLowerCase().includes(q) ||
-        (v.shelf || "").toLowerCase().includes(q)
+        fullName === q ||
+        (passNum !== "" && passNum === q) ||
+        (phoneClean !== "" && vPhoneClean === phoneClean)
       );
     }
 
-    /* جستجوی سریع مشتریان برای توضیح وضعیت ویزا و دسترسی سریع به فایل‌ها */
     function lookupView() {
-      const q = (searchFilter.lookup || "").trim().toLowerCase();
-      const list = state.visas.filter(v => matchesCustomerQuery(v, q));
+      const q = (searchFilter.lookup || "").trim();
+      const list = q ? state.visas.filter(v => matchesExactCustomerQuery(v, q, searchFilter.lookupMode)) : [];
       return `
         <div class="card">
           <div class="card-head">
-            <h3 class="card-title">🔎 جستجوی سریع مشتریان و دسترسی فوری به فایل و وضعیت ویزا</h3>
-            <span style="font-size:12px;color:var(--muted);">نتیجه: <strong>${list.length}</strong> از ${state.visas.length}</span>
+            <h3 class="card-title">🔎 جستجوی سریع مشتریان (نام کامل، پاسپورت کامل یا تلفن کامل)</h3>
+            <span style="font-size:12px;color:var(--muted);">نتیجه تطابق دقیق: <strong>${list.length}</strong></span>
           </div>
           <div class="quick-search-bar">
-            <input type="text" id="lookupSearchInput" placeholder="جستجو با اسم کامل، فامیل همراه، شماره پاسپورت، شماره ثبت شرکت یا شماره تلفن..." value="${esc(searchFilter.lookup)}" oninput="updateSearchBox('lookup','lookupSearchInput',this.value)" />
+            <select id="lookupModeSelect" onchange="searchFilter.lookupMode=this.value;render()" style="width:auto;min-width:165px;">
+              <option value="all" ${searchFilter.lookupMode==="all"?"selected":""}>نام کامل / پاسپورت کامل / تلفن کامل</option>
+              <option value="name" ${searchFilter.lookupMode==="name"?"selected":""}>فقط نام کامل مشتری</option>
+              <option value="passport" ${searchFilter.lookupMode==="passport"?"selected":""}>فقط شماره کامل پاسپورت</option>
+              <option value="phone" ${searchFilter.lookupMode==="phone"?"selected":""}>فقط شماره کامل تلفن</option>
+            </select>
+            <input type="text" id="lookupSearchInput" placeholder="نام کامل مشتری یا شماره کامل پاسپورت یا شماره کامل تلفن را وارد کنید..." value="${esc(searchFilter.lookup)}" oninput="updateSearchBox('lookup','lookupSearchInput',this.value)" />
             ${searchFilter.lookup ? `<button type="button" class="btn btn-outline btn-sm" onclick="updateSearchBox('lookup','lookupSearchInput','')">پاک کردن</button>` : ""}
           </div>
-          <div style="font-size:12px;color:var(--muted);">وقتی مشتری مراجعه می‌کند، نام کامل، شماره پاسپورت یا شماره تلفن را وارد کنید تا وضعیت ویزا، محل فایل و اسنادش بلافاصله نمایش داده شوند.</div>
+          <div style="font-size:12px;color:var(--muted);">برای یافتن دقیق پرونده و توضیح وضعیت ویزا برای مراجعه‌کننده، نام کامل، شماره کامل پاسپورت یا شماره کامل تلفن را درج کنید.</div>
         </div>
 
-        ${list.length ? list.map(v => {
-          const sym = currSym(v.currency || "AFN");
-          const due = Math.max(0, Number(v.total||0) - Number(v.paid||0));
-          const badge = v.status === "Arrived" ? `<span class="badge b-arrived">✅ گرینتد / آمده</span>`
-                      : v.status === "Rejected" ? `<span class="badge b-rejected">❌ ریجکت / رد شده</span>`
-                      : v.status === "Delivered" ? `<span class="badge b-paid">تحویل شده</span>`
-                      : `<span class="badge b-pending">در انتظار</span>`;
-          return `
-            <div class="card">
-              <div class="card-head">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <img class="avatar avatar-lg" src="${v.photo || fallbackAvatar(v.firstName)}" />
-                  <div>
-                    <strong style="font-size:15px;">${esc(v.firstName)} ${esc(v.lastName)}</strong> ${badge}
-                    <div style="font-size:12px;color:var(--muted);">شماره ثبت شرکت: <strong>${esc(v.companyRegNo||"—")}</strong> | پاسپورت: <strong>${esc(v.passport||"—")}</strong> | تلفن: <span dir="ltr">${esc(v.phone||"—")}</span></div>
+        ${!q ? `<div class="card" style="text-align:center;color:var(--muted);">نام کامل مشتری، شماره کامل پاسپورت یا شماره کامل تلفن را در کادر بالا وارد کنید.</div>`
+          : list.length ? list.map(v => {
+            const sym = currSym(v.currency || "AFN");
+            const due = Math.max(0, Number(v.total||0) - Number(v.paid||0));
+            const badge = v.status === "Arrived" ? `<span class="badge b-arrived">✅ گرینتد / آمده</span>`
+                        : v.status === "Rejected" ? `<span class="badge b-rejected">❌ ریجکت / رد شده</span>`
+                        : v.status === "Delivered" ? `<span class="badge b-paid">تحویل شده</span>`
+                        : `<span class="badge b-pending">در انتظار</span>`;
+            return `
+              <div class="card">
+                <div class="card-head">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <img class="avatar avatar-lg" src="${v.photo || fallbackAvatar(v.firstName)}" />
+                    <div>
+                      <strong style="font-size:15px;">${esc(v.firstName)} ${esc(v.lastName)}</strong> ${badge}
+                      <div style="font-size:12px;color:var(--muted);">شماره ثبت شرکت: <strong>${esc(v.companyRegNo||"—")}</strong> | پاسپورت: <strong>${esc(v.passport||"—")}</strong> | تلفن: <span dir="ltr">${esc(v.phone||"—")}</span></div>
+                    </div>
+                  </div>
+                  <div class="actions">
+                    <button class="btn btn-success btn-sm" onclick="printReceipt('${v.id}', true)">🖨 قبض کامل و QR</button>
+                    <button class="btn btn-teal btn-sm" onclick="savePersonFilesToEDriveAndDownload('${v.id}')">📁 پوشه و فایل‌های مشتری</button>
+                    <button class="btn btn-outline btn-sm" onclick="if(checkWorkAllowed()){state.tab='visas';render();setTimeout(()=>editVisa('${v.id}'),80)}">✏️ ویرایش پرونده</button>
+                    ${v.phone ? `<a class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener" href="${waLink(v.phone, buildWaMessage(v))}">واتساپ</a>` : ""}
                   </div>
                 </div>
-                <div class="actions">
-                  <button class="btn btn-success btn-sm" onclick="printReceipt('${v.id}', true)">🖨 قبض کامل و QR</button>
-                  <button class="btn btn-teal btn-sm" onclick="savePersonFilesToEDriveAndDownload('${v.id}')">📁 پوشه و فایل‌های مشتری</button>
-                  <button class="btn btn-outline btn-sm" onclick="state.tab='visas';render();setTimeout(()=>editVisa('${v.id}'),80)">✏️ ویرایش پرونده</button>
-                  ${v.phone ? `<a class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener" href="${waLink(v.phone, buildWaMessage(v))}">واتساپ</a>` : ""}
+                <div class="lookup-panel">
+                  <div class="receipt-grid" style="margin:0;">
+                    <div><strong>توضیح وضعیت ویزا برای مشتری:</strong> ${esc(statusLabel(v.status))} (${esc(v.country||"—")})</div>
+                    <div><strong>ریفرنس ویزا:</strong> ${esc(v.visaReference||"—")}</div>
+                    <div><strong>همراهان / فامیل (به ترتیب ثبت):</strong> ${esc(v.companions||"فردی")}</div>
+                    <div><strong>پوشه شخصی و بایگانی:</strong> <span dir="ltr">${esc(state.eDriveFolderLabel)}\\${esc(personFolderName(v))}</span> | بخش ${esc(v.section||"—")} | دوسیه ${esc(v.dossier||"—")} | قفس ${esc(v.shelf||"—")}</div>
+                    <div><strong>تاریخ ثبت:</strong> شمسی ${esc(v.shamsiDate||toShamsi(v.date))} (${esc(v.date)})</div>
+                    <div><strong>حساب مالی:</strong> کل ${sym}${fmt(v.total)} | رسید ${sym}${fmt(v.paid)} | باقی‌مانده: <strong>${sym}${fmt(due)}</strong></div>
+                  </div>
+                  ${v.notes ? `<div style="margin-top:8px;font-size:12px;"><strong>یادداشت پرونده:</strong> ${esc(v.notes)}</div>` : ""}
+                  <div class="actions" style="margin-top:10px;">
+                    ${v.photo ? `<a class="btn btn-primary btn-sm" href="${v.photo}" download="${esc(personFolderName(v))}_پاسپورت.jpg">🖼 اسکن پاسپورت</a>` : ""}
+                    ${v.tazkira ? `<a class="btn btn-primary btn-sm" href="${v.tazkira}" download="${esc(personFolderName(v))}_تذکره.jpg">📄 اسکن تذکره</a>` : ""}
+                    ${v.urgentDoc ? `<a class="btn btn-primary btn-sm" href="${v.urgentDoc}" download="${esc(personFolderName(v))}_سند_ضروری.jpg">📎 سند ضروری</a>` : ""}
+                  </div>
                 </div>
               </div>
-              <div class="lookup-panel">
-                <div class="receipt-grid" style="margin:0;">
-                  <div><strong>توضیح وضعیت ویزا برای مشتری:</strong> ${esc(statusLabel(v.status))} (${esc(v.country||"—")})</div>
-                  <div><strong>ریفرنس ویزا:</strong> ${esc(v.visaReference||"—")}</div>
-                  <div><strong>همراهان / فامیل:</strong> ${esc(v.companions||"فردی")}</div>
-                  <div><strong>محل بایگانی و فایل:</strong> پوشه <span dir="ltr">${esc(state.eDriveFolderLabel)}\\${esc(personFolderName(v))}</span> | بخش ${esc(v.section||"—")} | دوسیه ${esc(v.dossier||"—")} | قفس ${esc(v.shelf||"—")}</div>
-                  <div><strong>تاریخ ثبت:</strong> شمسی ${esc(v.shamsiDate||toShamsi(v.date))} (${esc(v.date)})</div>
-                  <div><strong>حساب مالی:</strong> کل ${sym}${fmt(v.total)} | رسید ${sym}${fmt(v.paid)} | باقی‌مانده: <strong>${sym}${fmt(due)}</strong></div>
-                </div>
-                ${v.notes ? `<div style="margin-top:8px;font-size:12px;"><strong>یادداشت پرونده:</strong> ${esc(v.notes)}</div>` : ""}
-                <div class="actions" style="margin-top:10px;">
-                  ${v.photo ? `<a class="btn btn-primary btn-sm" href="${v.photo}" download="${esc(personFolderName(v))}_پاسپورت.jpg">🖼 دانلود اسکن پاسپورت</a>` : `<span style="font-size:11.5px;color:var(--muted);">اسکن پاسپورت ثبت نشده</span>`}
-                  ${v.tazkira ? `<a class="btn btn-primary btn-sm" href="${v.tazkira}" download="${esc(personFolderName(v))}_تذکره.jpg">📄 دانلود اسکن تذکره</a>` : ""}
-                </div>
-              </div>
-            </div>
-          `;
-        }).join("") : `<div class="card" style="text-align:center;color:var(--muted);">هیچ مشتری‌ای با این مشخصات پیدا نشد.</div>`}
+            `;
+          }).join("") : `<div class="card" style="text-align:center;color:var(--muted);">هیچ مشتری‌ای با این نام کامل، شماره کامل پاسپورت یا شماره کامل تلفن پیدا نشد.</div>`}
       `;
     }
 
     function visaView() {
-      const q = (searchFilter.visas || "").toLowerCase();
-      const list = state.visas.filter(v => matchesCustomerQuery(v, q));
+      const q = (searchFilter.visas || "").trim();
+      const list = q ? state.visas.filter(v => matchesExactCustomerQuery(v, q, searchFilter.visasMode)) : state.visas;
       const td = todayISO();
       const autoReg = `KTA-REG-${String(Number(state.regCounter || 1)).padStart(4, "0")}`;
 
       return `
         <div class="card">
           <div class="card-head">
-            <h3 class="card-title">🔎 جستجوی سریع مشتری</h3>
+            <h3 class="card-title">🔎 جستجوی سریع مشتری (نام کامل / پاسپورت کامل / تلفن کامل)</h3>
             <span style="font-size:12px;color:var(--muted);">نمایش: <strong>${list.length}</strong> از ${state.visas.length}</span>
           </div>
           <div class="quick-search-bar">
-            <input type="text" id="visasSearchInput" placeholder="جستجو با اسم کامل، فامیل همراه، شماره پاسپورت، شماره ثبت شرکت یا تلفن..." value="${esc(searchFilter.visas)}" oninput="updateSearchBox('visas','visasSearchInput',this.value)" />
-            ${searchFilter.visas ? `<button type="button" class="btn btn-outline btn-sm" onclick="updateSearchBox('visas','visasSearchInput','')">پاک کردن</button>` : ""}
+            <select id="visasModeSelect" onchange="searchFilter.visasMode=this.value;render()" style="width:auto;min-width:155px;">
+              <option value="all" ${searchFilter.visasMode==="all"?"selected":""}>تطابق کامل (همه)</option>
+              <option value="name" ${searchFilter.visasMode==="name"?"selected":""}>نام کامل مشتری</option>
+              <option value="passport" ${searchFilter.visasMode==="passport"?"selected":""}>شماره کامل پاسپورت</option>
+              <option value="phone" ${searchFilter.visasMode==="phone"?"selected":""}>شماره کامل تلفن</option>
+            </select>
+            <input type="text" id="visasSearchInput" placeholder="نام کامل، شماره کامل پاسپورت یا شماره کامل تلفن را بنویسید..." value="${esc(searchFilter.visas)}" oninput="updateSearchBox('visas','visasSearchInput',this.value)" />
+            ${searchFilter.visas ? `<button type="button" class="btn btn-outline btn-sm" onclick="updateSearchBox('visas','visasSearchInput','')">نمایش همه</button>` : ""}
           </div>
         </div>
 
         <div class="drive-banner">
-          <div><strong>💾 پوشه شخصی در درایو E:</strong> <span dir="ltr">${esc(state.eDriveFolderLabel || "E:\\Kandahar_Travel_Clients")}</span> — هنگام اسکن یا ثبت، پوشه اختصاصی هر فرد و کاپی اسنادش به نام خودش ذخیره می‌شود.</div>
-          <button type="button" class="btn btn-success btn-sm" onclick="connectEDriveFolder()">اتصال پوشه در درایو E</button>
+          <div>
+            <strong>💾 پوشه شخصی در درایو E:</strong> <span dir="ltr">${esc(state.eDriveFolderLabel || "E:\\Kandahar_Travel_Clients")}</span>
+            | <strong>اکسل زنده:</strong> ${esc(state.liveExcelLabel || "متصل نشده")}
+          </div>
+          <div class="actions">
+            <button type="button" class="btn btn-success btn-sm" onclick="connectEDriveFolder()">اتصال پوشه درایو E</button>
+            <button type="button" class="btn btn-teal btn-sm" onclick="importFilesFromComputerFolderForCurrentForm()">📥 فراخوانی از پوشه کامپیوتر</button>
+          </div>
         </div>
 
         <div class="card">
           <div class="card-head">
-            <h3 class="card-title" id="vFormHeading">ثبت یا ویرایش معلومات مشتری / ویزا، شماره ثبت پاسپورت و اسکن</h3>
+            <h3 class="card-title" id="vFormHeading">ثبت یا ویرایش معلومات مشتری / ویزا، اسکن مستقیم و پوشه شخصی</h3>
             <button type="button" class="btn btn-outline btn-sm" onclick="if(checkUnfinishedBeforeLeave()) resetVisaForm()">فرم جدید</button>
           </div>
 
           <div class="scan-box">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-              <div>
-                <strong>📷 اسکن پاسپورت و انتقال خودکار به پوشه شخصی مشتری</strong>
-                <div style="font-size:11.5px;color:var(--muted);">عکس واضح از صفحه اطلاعات پاسپورت بگیرید تا مشخصات استخراج و تصویر اسکن در پوشه شخصی فرد ذخیره شود.</div>
+            <strong>📷 اسکن مستقیم (دایرکت) عکس، پاسپورت، تذکره و اسناد ضروری در پوشه شخصی</strong>
+            <div class="scan-grid">
+              <div class="scan-tile">
+                <label>۱. اسکن / عکس مشتری</label>
+                <input type="file" accept="image/*" capture="environment" onchange="handleDirectScan(event,'photo')" />
               </div>
-              <label class="btn btn-primary btn-sm" style="margin:0;">
-                📷 اسکن / انتخاب عکس پاسپورت
-                <input type="file" accept="image/*" capture="environment" style="display:none" onchange="scanPassportFile(event)" />
-              </label>
+              <div class="scan-tile">
+                <label>۲. اسکن مستقیم پاسپورت</label>
+                <input type="file" accept="image/*" capture="environment" onchange="handleDirectScan(event,'passport')" />
+              </div>
+              <div class="scan-tile">
+                <label>۳. اسکن مستقیم تذکره</label>
+                <input type="file" accept="image/*" capture="environment" onchange="handleDirectScan(event,'tazkira')" />
+              </div>
+              <div class="scan-tile">
+                <label>۴. اسکن اسناد ضروری</label>
+                <input type="file" accept="image/*,.pdf" capture="environment" onchange="handleDirectScan(event,'urgentDoc')" />
+              </div>
             </div>
-            <div class="scan-status" id="passportScanStatus">آماده اسکن پاسپورت...</div>
+            <div class="scan-status" id="passportScanStatus">آماده اسکن مستقیم اسناد...</div>
           </div>
 
           <form id="vForm" class="grid-form" oninput="markUnsaved()" onsubmit="saveVisa(event)">
             <input type="hidden" id="vId" />
             <div class="field"><label>نام مشتری *</label><input type="text" id="vFirstName" required /></div>
             <div class="field"><label>نام خانوادگی *</label><input type="text" id="vLastName" required /></div>
+            <div class="field"><label>نام پوشه دلخواه (اختیاری)</label><input type="text" id="vCustomFolder" placeholder="پیش‌فرض: نام و نام خانوادگی" /></div>
             <div class="field"><label>اسامی فامیل / همراهان (به ترتیب ثبت)</label><input type="text" id="vCompanions" placeholder="مثلاً: احمد، زهرا، علی..." /></div>
             <div class="field"><label>نام پدر</label><input type="text" id="vFatherName" /></div>
             <div class="field"><label>نام مادر</label><input type="text" id="vMotherName" /></div>
@@ -1140,15 +1319,17 @@
             <div class="field"><label>واحد پول (ارز)</label><select id="vCurrency">${currOpts("AFN")}</select></div>
             <div class="field"><label>مبلغ کل بیل</label><input type="number" id="vTotal" min="0" step="0.01" value="0" /></div>
             <div class="field"><label>مبلغ دریافت‌شده (بیل)</label><input type="number" id="vPaid" min="0" step="0.01" value="0" /></div>
-            <div class="field"><label>اسکن پاسپورت / عکس مشتری</label><input type="file" accept="image/*" onchange="handlePersonalScanUpload(event,'passport')" /><input type="hidden" id="vPhoto" /></div>
-            <div class="field"><label>اسکن تذکره / سند همراه</label><input type="file" accept="image/*,.pdf" onchange="handlePersonalScanUpload(event,'tazkira')" /><input type="hidden" id="vTazkira" /></div>
+            <input type="hidden" id="vPhoto" />
+            <input type="hidden" id="vTazkira" />
+            <input type="hidden" id="vUrgentDoc" />
             <div class="field" style="grid-column:1/-1;"><label>توضیحات این رسید / پرونده</label><textarea id="vNotes" rows="2">${esc(state.office.defaultReceiptNote || "")}</textarea></div>
             <div class="field"><button type="submit" class="btn btn-primary">💾 ذخیره کامل، اکسل و پوشه فرد</button></div>
           </form>
-          <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
             <img id="vPhotoPrev" class="avatar avatar-lg" src="${fallbackAvatar("م")}" />
             <span id="vTazkiraName" style="font-size:12px;color:var(--muted);">اسکن تذکره: ثبت نشده</span>
-            <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('vPhoto').value='';document.getElementById('vPhotoPrev').src=fallbackAvatar('م');markUnsaved()">حذف عکس</button>
+            <span id="vUrgentDocName" style="font-size:12px;color:var(--muted);">اسناد ضروری: ثبت نشده</span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('vPhoto').value='';document.getElementById('vPhotoPrev').src=fallbackAvatar('م');markUnsaved()">حذف عکس/پاسپورت</button>
           </div>
         </div>
 
@@ -1161,7 +1342,7 @@
             </div>
           </div>
           <div class="table-wrap"><table><thead><tr>
-            <th>#</th><th>عکس</th><th>مشتری و همراهان</th><th>پاسپورت و شماره ثبت</th><th>آرشیو (بخش/دوسیه/قفس)</th><th>مالی (کل / رسید / باقی)</th><th>وضعیت ویزا</th><th>عملیات و پوشه E</th>
+            <th>#</th><th>عکس</th><th>مشتری و همراهان</th><th>پاسپورت و شماره ثبت</th><th>پوشه و آرشیو</th><th>مالی (کل / رسید / باقی)</th><th>وضعیت ویزا</th><th>عملیات و پوشه E</th>
           </tr></thead><tbody>
             ${list.length ? list.map((v, idx) => {
               const sym = currSym(v.currency || "AFN");
@@ -1175,53 +1356,30 @@
                 <td><img class="avatar" src="${v.photo || fallbackAvatar(v.firstName)}" /></td>
                 <td><strong>${esc(v.firstName)} ${esc(v.lastName)}</strong><br><span style="font-size:11px;color:var(--muted);">${v.companions ? `همراهان: ${esc(v.companions)} | ` : ""}${esc(v.phone||"—")}</span></td>
                 <td><strong>${esc(v.passport||"—")}</strong><br><span style="font-size:11px;color:var(--primary);">ثبت: ${esc(v.companyRegNo||"—")}</span></td>
-                <td><span style="font-size:11.5px;">بخش: ${esc(v.section||"—")}<br>دوسیه: <strong>${esc(v.dossier||"—")}</strong> | قفس: <strong>${esc(v.shelf||"—")}</strong></span></td>
+                <td><span style="font-size:11.5px;">پوشه: <strong>${esc(personFolderName(v))}</strong><br>بخش ${esc(v.section||"—")} | دوسیه ${esc(v.dossier||"—")} | قفس ${esc(v.shelf||"—")}</span></td>
                 <td>کل: ${sym}${fmt(v.total)} | رسید: ${sym}${fmt(v.paid)}<br>باقی: <strong style="color:${due>0?"var(--danger)":"var(--success)"}">${sym}${fmt(due)}</strong></td>
                 <td>${badge}</td>
                 <td><div class="actions">
                   ${v.phone ? `<a class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener" href="${waLink(v.phone, buildWaMessage(v))}">واتساپ</a>` : ""}
-                  <button class="btn btn-outline btn-sm" onclick="if(checkUnfinishedBeforeLeave()) editVisa('${v.id}')">ویرایش</button>
+                  <button class="btn btn-outline btn-sm" onclick="if(checkWorkAllowed()&&checkUnfinishedBeforeLeave()) editVisa('${v.id}')">ویرایش</button>
                   <button class="btn btn-success btn-sm" onclick="printReceipt('${v.id}', false)">🖨 قبض QR</button>
                   <button class="btn btn-teal btn-sm" onclick="savePersonFilesToEDriveAndDownload('${v.id}')">📁 پوشه درایو E</button>
                   <button class="btn btn-danger btn-sm" onclick="delVisa('${v.id}')">حذف</button>
                 </div></td>
               </tr>`;
-            }).join("") : `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:18px;">هنوز مشتری ثبت نشده است.</td></tr>`}
+            }).join("") : `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:18px;">موردی ثبت یا یافت نشد.</td></tr>`}
           </tbody></table></div>
         </div>
       `;
     }
 
-    function handlePersonalScanUpload(ev, kind) {
-      const f = ev.target.files[0]; if (!f) return;
-      const r = new FileReader();
-      r.onload = async e => {
-        const url = e.target.result;
-        const fn = document.getElementById("vFirstName")?.value.trim() || "";
-        const ln = document.getElementById("vLastName")?.value.trim() || "";
-        const folder = personFolderName({ firstName: fn, lastName: ln });
-
-        if (kind === "passport") {
-          document.getElementById("vPhoto").value = url;
-          document.getElementById("vPhotoPrev").src = url;
-          if (fn || ln) await writeScanIntoPersonalFolder(folder, `${folder}_پاسپورت.jpg`, url);
-          notify("اسکن پاسپورت در پرونده و پوشه شخصی ذخیره شد.");
-        } else {
-          document.getElementById("vTazkira").value = url;
-          document.getElementById("vTazkiraName").textContent = `اسکن تذکره: ${f.name}`;
-          if (fn || ln) await writeScanIntoPersonalFolder(folder, `${folder}_تذکره.jpg`, url);
-          notify("اسکن تذکره در پرونده و پوشه شخصی ذخیره شد.");
-        }
-        markUnsaved();
-      };
-      r.readAsDataURL(f);
-    }
-
     function saveVisa(e) {
       e.preventDefault();
+      if (!checkWorkAllowed()) return;
       const id = document.getElementById("vId").value;
       const firstName = document.getElementById("vFirstName").value.trim();
       const lastName = document.getElementById("vLastName").value.trim();
+      const customFolder = document.getElementById("vCustomFolder").value.trim();
       const companions = document.getElementById("vCompanions").value.trim();
       const gmail = document.getElementById("vGmail").value.trim();
       const country = document.getElementById("vCountry").value;
@@ -1235,6 +1393,7 @@
       const status = document.getElementById("vStatus").value;
       const photo = document.getElementById("vPhoto").value;
       const tazkira = document.getElementById("vTazkira").value;
+      const urgentDoc = document.getElementById("vUrgentDoc").value;
 
       if (!id && companyRegNo === `KTA-REG-${String(Number(state.regCounter || 1)).padStart(4, "0")}`) {
         nextCompanyRegNo();
@@ -1246,7 +1405,7 @@
 
       const rec = {
         id: id || ("V-" + Date.now()),
-        firstName, lastName, companions,
+        firstName, lastName, customFolder, companions,
         fatherName: document.getElementById("vFatherName").value.trim(),
         motherName: document.getElementById("vMotherName").value.trim(),
         spouseName: document.getElementById("vSpouseName").value.trim(),
@@ -1262,7 +1421,7 @@
         currency: document.getElementById("vCurrency").value || "AFN",
         total: parseFloat(document.getElementById("vTotal").value || 0),
         paid: parseFloat(document.getElementById("vPaid").value || 0),
-        photo, tazkira,
+        photo, tazkira, urgentDoc,
         notes: document.getElementById("vNotes").value.trim()
       };
 
@@ -1293,11 +1452,15 @@
       if (existingPass) Object.assign(existingPass, passObj);
       else state.passports.push(passObj);
 
+      const folderLabel = personFolderName(rec);
       if (photo && !state.docs.some(d => d.caseId === rec.id && d.kind === "passport")) {
-        state.docs.unshift({ id: "DOC-P-" + Date.now(), caseId: rec.id, kind: "passport", title: `اسکن پاسپورت ${firstName} ${lastName}`, name: `${personFolderName(rec)}_پاسپورت.jpg`, data: photo, date: gDate });
+        state.docs.unshift({ id: "DOC-P-" + Date.now(), caseId: rec.id, kind: "passport", title: `پاسپورت/عکس ${firstName} ${lastName}`, name: `${folderLabel}_پاسپورت.jpg`, data: photo, date: gDate });
       }
       if (tazkira && !state.docs.some(d => d.caseId === rec.id && d.kind === "tazkira")) {
-        state.docs.unshift({ id: "DOC-T-" + Date.now(), caseId: rec.id, kind: "tazkira", title: `اسکن تذکره ${firstName} ${lastName}`, name: `${personFolderName(rec)}_تذکره.jpg`, data: tazkira, date: gDate });
+        state.docs.unshift({ id: "DOC-T-" + Date.now(), caseId: rec.id, kind: "tazkira", title: `تذکره ${firstName} ${lastName}`, name: `${folderLabel}_تذکره.jpg`, data: tazkira, date: gDate });
+      }
+      if (urgentDoc && !state.docs.some(d => d.caseId === rec.id && d.kind === "urgentDoc")) {
+        state.docs.unshift({ id: "DOC-U-" + Date.now(), caseId: rec.id, kind: "urgentDoc", title: `سند ضروری ${firstName} ${lastName}`, name: `${folderLabel}_سند_ضروری.jpg`, data: urgentDoc, date: gDate });
       }
 
       saveState();
@@ -1311,6 +1474,7 @@
       document.getElementById("vId").value = v.id;
       document.getElementById("vFirstName").value = v.firstName || "";
       document.getElementById("vLastName").value = v.lastName || "";
+      document.getElementById("vCustomFolder").value = v.customFolder || "";
       document.getElementById("vCompanions").value = v.companions || "";
       document.getElementById("vFatherName").value = v.fatherName || "";
       document.getElementById("vMotherName").value = v.motherName || "";
@@ -1336,6 +1500,8 @@
       document.getElementById("vPhotoPrev").src = v.photo || fallbackAvatar(v.firstName);
       document.getElementById("vTazkira").value = v.tazkira || "";
       document.getElementById("vTazkiraName").textContent = v.tazkira ? "اسکن تذکره: ثبت شده" : "اسکن تذکره: ثبت نشده";
+      document.getElementById("vUrgentDoc").value = v.urgentDoc || "";
+      document.getElementById("vUrgentDocName").textContent = v.urgentDoc ? "اسناد ضروری: ثبت شده" : "اسناد ضروری: ثبت نشده";
       document.getElementById("vNotes").value = v.notes || "";
       hasUnsaved = false;
       document.getElementById("vFormHeading").textContent = `ویرایش مشتری: ${v.firstName} ${v.lastName}`;
@@ -1353,15 +1519,18 @@
       document.getElementById("vPhoto").value = "";
       document.getElementById("vPhotoPrev").src = fallbackAvatar("م");
       document.getElementById("vTazkira").value = "";
+      document.getElementById("vUrgentDoc").value = "";
       document.getElementById("vTazkiraName").textContent = "اسکن تذکره: ثبت نشده";
+      document.getElementById("vUrgentDocName").textContent = "اسناد ضروری: ثبت نشده";
       document.getElementById("vNotes").value = state.office.defaultReceiptNote || "";
       const st = document.getElementById("passportScanStatus");
-      if (st) st.textContent = "آماده اسکن پاسپورت...";
+      if (st) st.textContent = "آماده اسکن مستقیم اسناد...";
       hasUnsaved = false;
-      document.getElementById("vFormHeading").textContent = "ثبت یا ویرایش معلومات مشتری / ویزا، شماره ثبت پاسپورت و اسکن";
+      document.getElementById("vFormHeading").textContent = "ثبت یا ویرایش معلومات مشتری / ویزا، اسکن مستقیم و پوشه شخصی";
     }
 
     function delVisa(id) {
+      if (!checkWorkAllowed()) return;
       if (!confirm("این مشتری حذف شود؟")) return;
       state.visas = state.visas.filter(x => x.id !== id);
       state.passports = state.passports.filter(p => p.caseId !== id);
@@ -1369,7 +1538,94 @@
       saveState(); render(); notify("حذف شد.");
     }
 
-    /* بخش ویزاهای عاجل */
+    /* مدیریت کارمندان، رمزهای اختصاصی و وضعیت فعالیت */
+    function staffView() {
+      const adminOk = isAdminUser();
+      return `
+        <div class="card">
+          <div class="card-head">
+            <h3 class="card-title">👥 مدیریت کارمندان، رمزهای اختصاصی و وضعیت کار</h3>
+            <span class="badge ${adminOk ? "b-arrived" : "b-pending"}">${adminOk ? "دسترسی کامل مدیریت (رئیس/معاون)" : "مشاهده لیست (تغییر توسط رئیس/معاون)"}</span>
+          </div>
+          ${adminOk ? `
+            <form class="grid-form" onsubmit="addEmployee(event)">
+              <div class="field"><label>نام کامل کارمند *</label><input name="name" required /></div>
+              <div class="field"><label>سمت / عنوان شغلی *</label><input name="job" required placeholder="کارمند بخش ویزا / تکت..." /></div>
+              <div class="field"><label>رمز عبور اختصاصی کارمند *</label><input type="password" name="password" required placeholder="رمز مخصوص کارمند" /></div>
+              <div class="field"><label>وضعیت کار</label><select name="active">
+                <option value="true">فعال (مجاز به کار)</option>
+                <option value="false">متوقف (غیرفعال)</option>
+              </select></div>
+              <div class="field"><button type="submit" class="btn btn-primary">➕ افزودن کارمند</button></div>
+            </form>
+          ` : `<div class="alert-box"><div>تنها رئیس یا معاون می‌تواند کارمند جدید اضافه کند، رمز تعیین/تغییر دهد یا کار کارمند را متوقف/فعال کند.</div></div>`}
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3 class="card-title">لیست کارمندان شرکت (${state.team.length})</h3></div>
+          <div class="table-wrap"><table><thead><tr>
+            <th>نام کارمند</th><th>سمت</th><th>وضعیت کار</th><th>رمز عبور</th><th>عملیات مدیریت</th>
+          </tr></thead><tbody>
+            ${state.team.map(emp => `<tr>
+              <td><strong>${esc(emp.name)}</strong></td>
+              <td>${esc(emp.job)}</td>
+              <td><span class="badge ${emp.active !== false ? "b-arrived" : "b-rejected"}">${emp.active !== false ? "✅ فعال" : "⛔ متوقف"}</span></td>
+              <td>${adminOk ? `<span>${emp.password ? "••••••" : "تنظیم نشده"}</span>` : "••••••••"}</td>
+              <td>${adminOk ? `<div class="actions">
+                <button class="btn ${emp.active !== false ? "btn-warning" : "btn-success"} btn-sm" onclick="toggleEmployeeWork('${emp.id}')">${emp.active !== false ? "⛔ توقف کار" : "✅ فعال‌سازی کار"}</button>
+                <button class="btn btn-outline btn-sm" onclick="changeEmployeePassword('${emp.id}')">🔑 تغییر رمز</button>
+                ${!emp.isAdmin ? `<button class="btn btn-danger btn-sm" onclick="removeEmployee('${emp.id}')">حذف کارمند</button>` : ""}
+              </div>` : `<span style="font-size:11.5px;color:var(--muted);">محدود</span>`}</td>
+            </tr>`).join("")}
+          </tbody></table></div>
+        </div>
+      `;
+    }
+
+    function addEmployee(e) {
+      e.preventDefault();
+      if (!isAdminUser()) return notify("فقط رئیس یا معاون مجاز است.", true);
+      const fd = new FormData(e.target);
+      const name = fd.get("name").trim();
+      const job = fd.get("job").trim();
+      const password = fd.get("password");
+      const active = fd.get("active") === "true";
+      state.team.push({ id: "U-" + Date.now(), name, job, password, active, isAdmin: false });
+      addAudit(`افزودن کارمند جدید: ${name} (${job})`);
+      saveState(); render(); notify("کارمند با رمز اختصاصی اضافه شد.");
+    }
+
+    function toggleEmployeeWork(id) {
+      if (!isAdminUser()) return notify("فقط رئیس یا معاون مجاز است.", true);
+      const emp = state.team.find(x => x.id === id); if (!emp) return;
+      emp.active = emp.active === false ? true : false;
+      addAudit(`${emp.active ? "فعال‌سازی" : "توقف"} کار کارمند: ${emp.name}`);
+      saveState(); render();
+      notify(`وضعیت کار ${emp.name} به «${emp.active ? "فعال" : "متوقف"}» تغییر کرد.`);
+    }
+
+    function changeEmployeePassword(id) {
+      if (!isAdminUser()) return notify("فقط رئیس یا معاون مجاز است.", true);
+      const emp = state.team.find(x => x.id === id); if (!emp) return;
+      const np = prompt(`رمز جدید برای «${emp.name}» وارد کنید:`);
+      if (!np) return;
+      emp.password = np;
+      addAudit(`تغییر رمز کارمند: ${emp.name}`);
+      saveState(); render(); notify("رمز کارمند تغییر یافت.");
+    }
+
+    function removeEmployee(id) {
+      if (!isAdminUser()) return notify("فقط رئیس یا معاون مجاز است.", true);
+      const emp = state.team.find(x => x.id === id); if (!emp) return;
+      if (emp.isAdmin) return notify("حذف حساب رئیس/معاون مجاز نیست.", true);
+      if (!confirm(`کارمند «${emp.name}» حذف شود؟`)) return;
+      state.team = state.team.filter(x => x.id !== id);
+      if (state.userId === id) state.userId = state.team[0]?.id || "U-1";
+      addAudit(`حذف کارمند: ${emp.name}`);
+      saveState(); render(); notify("کارمند حذف شد.");
+    }
+
+    /* ویزاهای عاجل */
     function urgentView() {
       const q = (searchFilter.urgent || "").toLowerCase();
       const list = state.urgentVisas.filter(u =>
@@ -1408,8 +1664,8 @@
               <td><span class="badge ${u.status==="Arrived"?"b-arrived":u.status==="Rejected"?"b-rejected":"b-urgent"}">${u.status==="Arrived"?"✅ صادر شده":u.status==="Rejected"?"❌ رد شده":"⚡ عاجل"}</span></td>
               <td>${esc(u.notes||"—")}</td>
               <td><div class="actions">
-                ${u.status!=="Arrived"?`<button class="btn btn-success btn-sm" onclick="const x=state.urgentVisas.find(i=>i.id==='${u.id}');if(x){x.status='Arrived';saveState();render();}">تایید صدور</button>`:""}
-                <button class="btn btn-danger btn-sm" onclick="state.urgentVisas=state.urgentVisas.filter(i=>i.id!=='${u.id}');saveState();render()">حذف</button>
+                ${u.status!=="Arrived"?`<button class="btn btn-success btn-sm" onclick="if(!checkWorkAllowed())return;const x=state.urgentVisas.find(i=>i.id==='${u.id}');if(x){x.status='Arrived';saveState();render();}">تایید صدور</button>`:""}
+                <button class="btn btn-danger btn-sm" onclick="if(!checkWorkAllowed())return;state.urgentVisas=state.urgentVisas.filter(i=>i.id!=='${u.id}');saveState();render()">حذف</button>
               </div></td>
             </tr>`).join("") : `<tr><td colspan="7" style="text-align:center;color:var(--muted);">ویزای عاجلی ثبت نشده است.</td></tr>`}
           </tbody></table></div>
@@ -1419,6 +1675,7 @@
 
     function addUrgentVisa(e) {
       e.preventDefault();
+      if (!checkWorkAllowed()) return;
       const fd = new FormData(e.target);
       state.urgentVisas.unshift({
         id: "UV-" + Date.now(),
@@ -1535,7 +1792,7 @@
                 <td>${esc(t.pnr||"—")} (${esc(t.flightDate)})</td>
                 <td>${sym}${fmt(t.sellPrice)} (سود: ${sym}${fmt(prof)})</td>
                 <td><strong>${sym}${fmt(due)}</strong></td>
-                <td><button class="btn btn-danger btn-sm" onclick="state.tickets=state.tickets.filter(x=>x.id!=='${t.id}');saveState();render()">حذف</button></td>
+                <td><button class="btn btn-danger btn-sm" onclick="if(!checkWorkAllowed())return;state.tickets=state.tickets.filter(x=>x.id!=='${t.id}');saveState();render()">حذف</button></td>
               </tr>`;
             }).join("") : `<tr><td colspan="6" style="text-align:center;color:var(--muted);">تکتی ثبت نشده است.</td></tr>`}
           </tbody></table></div>
@@ -1544,6 +1801,7 @@
     }
     function addTicket(e) {
       e.preventDefault();
+      if (!checkWorkAllowed()) return;
       const fd = new FormData(e.target);
       state.tickets.unshift({
         id: "TK-" + Date.now(), passengerName: fd.get("passengerName").trim(), phone: cleanNum(fd.get("phone")),
@@ -1560,8 +1818,13 @@
         <div class="card">
           <div class="card-head">
             <h3 class="card-title">📗 جدول اکسل متصل مشتریان به ترتیب ثبت (${state.visas.length})</h3>
-            <button class="btn btn-success btn-sm" onclick="downloadExcelFile()">⬇️ دانلود فایل اکسل (.xls)</button>
+            <div class="actions">
+              <button class="btn btn-teal btn-sm" onclick="connectLiveExcelFile()">🔗 اتصال فایل اکسل زنده</button>
+              <button class="btn btn-success btn-sm" onclick="syncLiveExcelFile(true)">🔄 همگام‌سازی اکسل</button>
+              <button class="btn btn-primary btn-sm" onclick="downloadExcelFile()">⬇️ دانلود فایل اکسل (.xls)</button>
+            </div>
           </div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">فایل اکسل متصل فعلی: <strong>${esc(state.liveExcelLabel || "متصل نشده")}</strong> — تمام مشتریان و همراهانشان دقیقاً به ترتیب ثبت در این جدول قرار می‌گیرند.</div>
           <div class="table-wrap"><table><thead><tr>
             <th>ردیف ثبت</th><th>اسم مکمل</th><th>همراهان / فامیل</th><th>شماره ثبت شرکت</th><th>تاریخ شمسی</th><th>تاریخ میلادی</th><th>شماره پاسپورت</th><th>شماره تلفن</th><th>ریفرنس نمبر</th><th>بخش / دوسیه / قفس</th>
           </tr></thead><tbody>
@@ -1574,12 +1837,6 @@
           </tbody></table></div>
         </div>
       `;
-    }
-    function downloadExcelFile() {
-      const rows = state.visas.map((v, i) => `<tr><td>${i+1}</td><td>${esc(v.firstName)} ${esc(v.lastName)}</td><td>${esc(v.companions||"")}</td><td>${esc(v.companyRegNo||"")}</td><td>${esc(v.shamsiDate||toShamsi(v.date))}</td><td>${esc(v.date)}</td><td>${esc(v.passport)}</td><td>${esc(v.phone)}</td><td>${esc(v.visaReference||"")}</td><td>${esc(v.section||"")} / ${esc(v.dossier||"")} / ${esc(v.shelf||"")}</td></tr>`).join("");
-      const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body dir="rtl"><table border="1"><thead><tr><th>ردیف ثبت</th><th>اسم</th><th>همراهان / فامیل</th><th>شماره ثبت شرکت</th><th>تاریخ شمسی</th><th>تاریخ میلادی</th><th>پاسپورت</th><th>تلفن</th><th>ریفرنس</th><th>بخش / دوسیه / قفس</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
-      const blob = new Blob(["\uFEFF", html], { type: "application/vnd.ms-excel;charset=utf-8;" });
-      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "Kandahar_Travel_Customers_Ordered.xls"; a.click();
     }
 
     function companiesView() {
@@ -1612,19 +1869,21 @@
             return `<tr>
               <td><strong>${esc(c?c.name:"—")}</strong></td><td>${esc(t.title)}</td>
               <td>${sym}${fmt(t.total)}</td><td>${sym}${fmt(t.paid)}</td><td><strong>${sym}${fmt(due)}</strong></td>
-              <td><button class="btn btn-danger btn-sm" onclick="state.companyTransactions=state.companyTransactions.filter(x=>x.id!=='${t.id}');saveState();render()">حذف</button></td>
+              <td><button class="btn btn-danger btn-sm" onclick="if(!checkWorkAllowed())return;state.companyTransactions=state.companyTransactions.filter(x=>x.id!=='${t.id}');saveState();render()">حذف</button></td>
             </tr>`;
           }).join("") : `<tr><td colspan="6" style="text-align:center;color:var(--muted);">حسابی ثبت نشده است.</td></tr>`}
         </tbody></table></div></div>
       `;
     }
     function addCompany(e) {
-      e.preventDefault(); const fd = new FormData(e.target);
+      e.preventDefault(); if (!checkWorkAllowed()) return;
+      const fd = new FormData(e.target);
       state.companies.unshift({ id: "C-" + Date.now(), name: fd.get("name").trim(), type: fd.get("type"), phone: cleanNum(fd.get("phone")) });
       saveState(); render(); notify("شرکت ثبت شد.");
     }
     function addCompanyTx(e) {
-      e.preventDefault(); const fd = new FormData(e.target);
+      e.preventDefault(); if (!checkWorkAllowed()) return;
+      const fd = new FormData(e.target);
       if (!fd.get("companyId")) return notify("ابتدا شرکت را ثبت کنید", true);
       state.companyTransactions.unshift({ id: "CT-" + Date.now(), companyId: fd.get("companyId"), title: fd.get("title").trim(), currency: fd.get("currency"), total: parseFloat(fd.get("total")||0), paid: parseFloat(fd.get("paid")||0) });
       saveState(); render(); notify("صورت‌حساب ثبت شد.");
@@ -1651,14 +1910,15 @@
             return `<tr>
               <td><strong>${esc(d.name)}</strong></td><td>${esc(d.phone||"—")}</td>
               <td>${sym}${fmt(d.taken)}</td><td>${sym}${fmt(d.returned)}</td><td><strong>${sym}${fmt(due)}</strong></td>
-              <td><button class="btn btn-danger btn-sm" onclick="state.otherDebtors=state.otherDebtors.filter(x=>x.id!=='${d.id}');saveState();render()">حذف</button></td>
+              <td><button class="btn btn-danger btn-sm" onclick="if(!checkWorkAllowed())return;state.otherDebtors=state.otherDebtors.filter(x=>x.id!=='${d.id}');saveState();render()">حذف</button></td>
             </tr>`;
           }).join("") : `<tr><td colspan="6" style="text-align:center;color:var(--muted);">موردی ثبت نشده است.</td></tr>`}
         </tbody></table></div></div>
       `;
     }
     function addDebtor(e) {
-      e.preventDefault(); const fd = new FormData(e.target);
+      e.preventDefault(); if (!checkWorkAllowed()) return;
+      const fd = new FormData(e.target);
       state.otherDebtors.unshift({ id: "D-" + Date.now(), name: fd.get("name").trim(), phone: cleanNum(fd.get("phone")), currency: fd.get("currency"), taken: parseFloat(fd.get("taken")||0), returned: parseFloat(fd.get("returned")||0), notes: fd.get("notes").trim() });
       saveState(); render(); notify("مقروض ثبت شد.");
     }
@@ -1698,15 +1958,16 @@
             <td>${esc(p.shamsiDate || toShamsi(p.inDate) || p.inDate)}</td>
             <td><span class="badge ${p.state==="Returned"?"b-paid":"b-pending"}">${p.state==="Returned"?"تحویل داده شد":"بایگانی / نزد دفتر"}</span></td>
             <td><div class="actions">
-              ${p.state!=="Returned"?`<button class="btn btn-success btn-sm" onclick="const x=state.passports.find(i=>i.id==='${p.id}');if(x){x.state='Returned';addAudit('تحویل پاسپورت '+x.owner);saveState();render();}">تحویل دادن</button>`:""}
-              <button class="btn btn-danger btn-sm" onclick="state.passports=state.passports.filter(i=>i.id!=='${p.id}');saveState();render()">حذف</button>
+              ${p.state!=="Returned"?`<button class="btn btn-success btn-sm" onclick="if(!checkWorkAllowed())return;const x=state.passports.find(i=>i.id==='${p.id}');if(x){x.state='Returned';addAudit('تحویل پاسپورت '+x.owner);saveState();render();}">تحویل دادن</button>`:""}
+              <button class="btn btn-danger btn-sm" onclick="if(!checkWorkAllowed())return;state.passports=state.passports.filter(i=>i.id!=='${p.id}');saveState();render()">حذف</button>
             </div></td>
           </tr>`).join("") : `<tr><td colspan="6" style="text-align:center;color:var(--muted);">موردی یافت نشد.</td></tr>`}
         </tbody></table></div></div>
       `;
     }
     function addPass(e) {
-      e.preventDefault(); const fd = new FormData(e.target);
+      e.preventDefault(); if (!checkWorkAllowed()) return;
+      const fd = new FormData(e.target);
       const dt = fd.get("inDate") || todayISO();
       const regNo = (fd.get("regNo") || "").trim() || nextCompanyRegNo();
       if (regNo === `KTA-REG-${String(Number(state.regCounter || 1)).padStart(4, "0")}`) nextCompanyRegNo();
@@ -1746,7 +2007,7 @@
             <div class="field"><label>۱ دالر ($) چند افغانی است؟</label><input type="number" id="rAFN" step="0.01" value="${r.AFN}" /></div>
             <div class="field"><label>۱ دالر ($) چند یورو است؟</label><input type="number" id="rEUR" step="0.0001" value="${r.EUR}" /></div>
             <div class="field"><label>۱ دالر ($) چند کلدار است؟</label><input type="number" id="rPKR" step="0.01" value="${r.PKR}" /></div>
-            <div class="field"><button type="button" class="btn btn-primary" onclick="state.ratesToUSD={USD:1,AFN:+document.getElementById('rAFN').value||70.5,EUR:+document.getElementById('rEUR').value||0.92,PKR:+document.getElementById('rPKR').value||278.5};saveState();notify('نرخ اسعار ذخیره شد.');">ذخیره نرخ‌ها</button></div>
+            <div class="field"><button type="button" class="btn btn-primary" onclick="if(!checkWorkAllowed())return;state.ratesToUSD={USD:1,AFN:+document.getElementById('rAFN').value||70.5,EUR:+document.getElementById('rEUR').value||0.92,PKR:+document.getElementById('rPKR').value||278.5};saveState();notify('نرخ اسعار ذخیره شد.');">ذخیره نرخ‌ها</button></div>
           </form>
         </div>
       `;
@@ -1772,10 +2033,13 @@
         <div class="card">
           <div class="card-head">
             <h3 class="card-title">📁 نگهداری اسناد، درایو E و پوشه شخصی</h3>
-            <button class="btn btn-teal btn-sm" onclick="connectEDriveFolder()">💾 اتصال پوشه درایو E</button>
+            <div class="actions">
+              <button class="btn btn-teal btn-sm" onclick="connectEDriveFolder()">💾 اتصال پوشه درایو E</button>
+              <button class="btn btn-primary btn-sm" onclick="importFilesFromComputerFolderForCurrentForm()">📥 فراخوانی از پوشه کامپیوتر</button>
+            </div>
           </div>
           <form class="grid-form" onsubmit="addDoc(event)">
-            <div class="field"><label>نام مشتری (برای پوشه شخصی)</label><input name="ownerName" placeholder="اختیاری" /></div>
+            <div class="field"><label>نام پوشه / مشتری</label><input name="ownerName" placeholder="نام فرد برای پوشه شخصی" /></div>
             <div class="field"><label>عنوان سند *</label><input name="title" required /></div>
             <div class="field"><label>فایل / تصویر *</label><input type="file" id="docInp" required /></div>
             <div class="field"><button type="submit" class="btn btn-primary">ذخیره سند</button></div>
@@ -1787,15 +2051,16 @@
       `;
     }
     function addDoc(e) {
-      e.preventDefault();
+      e.preventDefault(); if (!checkWorkAllowed()) return;
       const f = document.getElementById("docInp").files[0]; if (!f) return;
       const fd = new FormData(e.target);
       const ownerName = (fd.get("ownerName") || "").trim();
       const title = (fd.get("title") || "").trim();
       const r = new FileReader();
       r.onload = async ev => {
-        const fileName = ownerName ? `${personFolderName({ firstName: ownerName, lastName: "" })}_${f.name}` : f.name;
-        if (ownerName) await writeScanIntoPersonalFolder(personFolderName({ firstName: ownerName, lastName: "" }), fileName, ev.target.result);
+        const folder = ownerName ? personFolderName({ firstName: ownerName, lastName: "" }) : "";
+        const fileName = folder ? `${folder}_${f.name}` : f.name;
+        if (folder) await writeFileIntoPersonalFolder(folder, fileName, ev.target.result, true);
         state.docs.unshift({ id: "DOC-" + Date.now(), title, name: fileName, data: ev.target.result, date: todayISO() });
         saveState(); render(); notify("سند ذخیره شد.");
       };
@@ -1817,7 +2082,7 @@
         <div class="card">
           <div class="card-head"><h3 class="card-title">🔐 تنظیمات لوگو، جیمیل روزانه، قوانین و رمزها (انحصاری رئیس و معاون)</h3></div>
           <div class="alert-box">
-            <div>تغییر رمز ورود، رمز مالی و رمز این بخش فقط با تایید همزمان <strong>رئیس</strong> و <strong>معاون</strong> فعال می‌شود.</div>
+            <div>تغییر رمز مالی و رمز این بخش فقط با تایید همزمان <strong>رئیس</strong> و <strong>معاون</strong> فعال می‌شود.</div>
             <div class="actions">
               <button type="button" class="btn ${state.presidentApproved?"btn-success":"btn-outline"} btn-sm" onclick="state.presidentApproved=!state.presidentApproved;saveState();render()">${state.presidentApproved?"✓ تایید رئیس":"تایید رئیس"}</button>
               <button type="button" class="btn ${state.viceApproved?"btn-success":"btn-outline"} btn-sm" onclick="state.viceApproved=!state.viceApproved;saveState();render()">${state.viceApproved?"✓ تایید معاون":"تایید معاون"}</button>
@@ -1827,10 +2092,9 @@
             <div class="field"><label>نام شرکت *</label><input id="oName" required value="${esc(state.office.name)}" /></div>
             <div class="field"><label>جیمیل مخصوص شرکت (ذخیره روزانه)</label><input type="email" id="oGmail" value="${esc(state.companyBackupGmail)}" placeholder="company@gmail.com" /></div>
             <div class="field"><label>مسیر پوشه درایو E</label><input id="oDrive" value="${esc(state.eDriveFolderLabel || "E:\\Kandahar_Travel_Clients")}" /></div>
-            <div class="field"><label>رمز ورود برنامه (${ok?"قابل تغییر":"قفل — نیاز به تایید رئیس و معاون"})</label><input id="oAppP" value="${esc(state.appPassword)}" ${ok?"":"readonly"} /></div>
             <div class="field"><label>رمز بخش مالی (${ok?"قابل تغییر":"قفل — نیاز به تایید رئیس و معاون"})</label><input id="oFinP" value="${esc(state.financePassword)}" ${ok?"":"readonly"} /></div>
             <div class="field"><label>رمز این بخش (لوگو، جیمیل، قوانین و رمزها) (${ok?"قابل تغییر":"قفل"})</label><input id="oSetP" value="${esc(state.settingsPassword)}" ${ok?"":"readonly"} /></div>
-            <div class="field"><label>آپلود لوگوی جدید</label><input type="file" accept="image/*" onchange="pickImage(event,'oLogoH','sidebarLogo',true)" /><input type="hidden" id="oLogoH" value="${esc(state.office.logo)}" /></div>
+            <div class="field"><label>آپلود لوگوی جدید</label><input type="file" accept="image/*" onchange="pickLogoImage(event)" /><input type="hidden" id="oLogoH" value="${esc(state.office.logo)}" /></div>
             <div class="field" style="grid-column:1/-1;"><label>قانون اخذ ویزا (ثابت و قابل ویرایش برای درج در رسید)</label><textarea id="oVisaLaw" rows="2">${esc(state.office.visaLawText || "")}</textarea></div>
             <div class="field" style="grid-column:1/-1;"><label>قانون شرکت در قبال مشتری (ثابت و قابل ویرایش برای درج در رسید)</label><textarea id="oCompLaw" rows="2">${esc(state.office.companyLawText || "")}</textarea></div>
             <div class="field"><button type="submit" class="btn btn-primary">ذخیره تنظیمات</button></div>
@@ -1847,7 +2111,6 @@
       state.office.visaLawText = document.getElementById("oVisaLaw").value.trim();
       state.office.companyLawText = document.getElementById("oCompLaw").value.trim();
       if (state.presidentApproved && state.viceApproved) {
-        state.appPassword = document.getElementById("oAppP").value.trim();
         state.financePassword = document.getElementById("oFinP").value.trim();
         state.settingsPassword = document.getElementById("oSetP").value.trim();
         state.presidentApproved = false; state.viceApproved = false;
@@ -1865,7 +2128,7 @@
           <div class="field"><label>عنوان هزینه *</label><input id="exT" required /></div>
           <div class="field"><label>ارز</label><select id="exC">${currOpts("AFN")}</select></div>
           <div class="field"><label>مبلغ *</label><input type="number" id="exA" step="0.01" required /></div>
-          <div class="field"><button type="button" class="btn btn-primary" onclick="const t=document.getElementById('exT').value.trim();const a=+document.getElementById('exA').value;if(t&&a>0){state.expenses.unshift({title:t,currency:document.getElementById('exC').value,amount:a,date:todayISO()});saveState();render();notify('هزینه ثبت شد.');}">ثبت هزینه</button></div>
+          <div class="field"><button type="button" class="btn btn-primary" onclick="if(!checkWorkAllowed())return;const t=document.getElementById('exT').value.trim();const a=+document.getElementById('exA').value;if(t&&a>0){state.expenses.unshift({title:t,currency:document.getElementById('exC').value,amount:a,date:todayISO()});saveState();render();notify('هزینه ثبت شد.');}">ثبت هزینه</button></div>
         </form></div>
         <div class="card"><div class="table-wrap"><table><thead><tr><th>عنوان</th><th>مبلغ</th><th>تاریخ</th></tr></thead><tbody>
           ${state.expenses.map(x => `<tr><td>${esc(x.title)}</td><td>${currSym(x.currency)}${fmt(x.amount)}</td><td>${esc(x.date)}</td></tr>`).join("")}
