@@ -1,25 +1,27 @@
 {
-  "name": "Kandahar Travel",
-  "short_name": "Kandahar Travel",
-  "description": "Kandahar Afghan Travel Agency Management System",
-  "start_url": "/Kandahar-Afghan-Travel-Agency/",
-  "scope": "/Kandahar-Afghan-Travel-Agency/",
+  "name": "کندهار افغان سیاحتی شرکت",
+  "short_name": "کندهار افغان سیاحتی",
+  "description": "سیستم مدیریت، رسید سه بخشی و همگام‌سازی کندهار افغان سیاحتی شرکت",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#081526",
-  "theme_color": "#081526",
-  "orientation": "portrait-primary",
+  "orientation": "any",
+  "dir": "rtl",
+  "lang": "fa",
+  "background_color": "#0f3d2e",
+  "theme_color": "#0f3d2e",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "icon.png",
+      "src": "./icon-192.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
